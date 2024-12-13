@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class CombinedApp {
 
+
     private static final String FILE_NAME = "accounts.txt";
     private static Map<String, String> users = new HashMap<>(); // Stores username and password
 
@@ -23,11 +24,56 @@ public class CombinedApp {
             "Slovenia", "Singapore", "Spain", "Sweden", "Switzerland", "Thailand", "Turkey", "United Kingdom",
             "United States", "Vatican City"
     );
-
     // Variable to hold currency rates
     private static Map<String, Double> currencyRates;
 
+
+    private static CardLayout cardLayout = new CardLayout();
+    private static JPanel mainPanel = new JPanel(cardLayout);
+
+
+
     public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Combined Application");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(600, 400);
+            frame.setLocationRelativeTo(null);
+
+            // Add all panels to the CardLayout
+            mainPanel.add(createInitialPanel(), "InitialPanel");
+            mainPanel.add(createLoginPanel(), "LoginPanel");
+            mainPanel.add(createRegisterPanel(), "RegisterPanel");
+            mainPanel.add(createMainAppPanel(), "MainAppPanel");
+            mainPanel.add(createCurrencyConverterPanel(), "CurrencyConverterPanel");
+            mainPanel.add(createCountryListPanel(), "CountryListPanel");
+
+            frame.add(mainPanel);
+            frame.setVisible(true);
+
+            // Show the initial panel
+            cardLayout.show(mainPanel, "InitialPanel");
+        });
+    }
+
+    // Helper method to switch panels
+    private static void switchPanel(String panelName) {
+        cardLayout.show(mainPanel, panelName);
+    }
+
+    // Dummy methods for user data handling
+    private static boolean validateLogin(String username, String password) {
+        return users.containsKey(username) && users.get(username).equals(password);
+    }
+
+    private static void registerUser(String username, String password) {
+        users.put(username, password);
+    }
+
+
+
+
+    /*public static void main(String[] args) {
         // Load currency rates when the application starts
         currencyRates = CurrencyRateLoader.loadCurrencyRates(); // Call static method from CurrencyRateLoader
         // Load existing accounts from the file
@@ -35,9 +81,9 @@ public class CombinedApp {
         // Create and show the initial panel asking if the user has an account
         SwingUtilities.invokeLater(CombinedApp::createInitialPanel);
     }
+*/
 
-
-    private static void createInitialPanel() {
+    private static void createInitialPanel2() {
         JFrame frame = new JFrame("Account Login");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -200,6 +246,193 @@ public class CombinedApp {
         frame.add(panel);
         frame.setVisible(true);
     }
+
+    //---------
+    // from chatgpt
+    private static JPanel createInitialPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel("Do you have an account?", SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.add(label, BorderLayout.NORTH);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        JButton loginButton = new JButton("Yes");
+        JButton registerButton = new JButton("No");
+
+        loginButton.addActionListener(e -> switchPanel("LoginPanel"));
+        registerButton.addActionListener(e -> switchPanel("RegisterPanel"));
+
+        buttonPanel.add(loginButton);
+        buttonPanel.add(registerButton);
+        panel.add(buttonPanel, BorderLayout.CENTER);
+
+        return panel;
+    }
+    private static JPanel createLoginPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        JLabel label = new JLabel("Login");
+        label.setFont(new Font("Arial", Font.BOLD, 18));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(label, gbc);
+
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(new JLabel("Username:"), gbc);
+
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        JTextField usernameField = new JTextField(15);
+        panel.add(usernameField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        panel.add(new JLabel("Password:"), gbc);
+
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        JPasswordField passwordField = new JPasswordField(15);
+        panel.add(passwordField, gbc);
+
+        JButton loginButton = new JButton("Login");
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        panel.add(loginButton, gbc);
+
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> switchPanel("InitialPanel"));
+        gbc.gridy = 4;
+        panel.add(backButton, gbc);
+
+        loginButton.addActionListener(e -> {
+            String username = usernameField.getText();
+            String password = new String(passwordField.getPassword());
+            if (validateLogin(username, password)) {
+                JOptionPane.showMessageDialog(null, "Login successful!");
+                switchPanel("MainAppPanel");
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid credentials. Try again.");
+            }
+        });
+
+        return panel;
+    }
+    private static JPanel createRegisterPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        JLabel label = new JLabel("Register");
+        label.setFont(new Font("Arial", Font.BOLD, 18));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(label, gbc);
+
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(new JLabel("Username:"), gbc);
+
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        JTextField usernameField = new JTextField(15);
+        panel.add(usernameField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        panel.add(new JLabel("Password:"), gbc);
+
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        JPasswordField passwordField = new JPasswordField(15);
+        panel.add(passwordField, gbc);
+
+        JButton registerButton = new JButton("Register");
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        panel.add(registerButton, gbc);
+
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> switchPanel("InitialPanel"));
+        gbc.gridy = 4;
+        panel.add(backButton, gbc);
+
+        registerButton.addActionListener(e -> {
+            String username = usernameField.getText();
+            String password = new String(passwordField.getPassword());
+            if (!username.isEmpty() && !password.isEmpty()) {
+                registerUser(username, password);
+                JOptionPane.showMessageDialog(null, "Registration successful!");
+                switchPanel("LoginPanel");
+            } else {
+                JOptionPane.showMessageDialog(null, "Fields cannot be empty.");
+            }
+        });
+
+        return panel;
+    }
+    private static JPanel createMainAppPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel("Main Application", SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.add(label, BorderLayout.NORTH);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        JButton countryListButton = new JButton("Show Country List");
+        JButton currencyConverterButton = new JButton("Currency Converter");
+
+        countryListButton.addActionListener(e -> switchPanel("CountryListPanel"));
+        currencyConverterButton.addActionListener(e -> switchPanel("CurrencyConverterPanel"));
+
+        buttonPanel.add(countryListButton);
+        buttonPanel.add(currencyConverterButton);
+        panel.add(buttonPanel, BorderLayout.CENTER);
+
+        return panel;
+    }
+    private static JPanel createCurrencyConverterPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel("Currency Converter", SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.add(label, BorderLayout.NORTH);
+
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> switchPanel("MainAppPanel"));
+        panel.add(backButton, BorderLayout.SOUTH);
+
+        // Add conversion logic and components here
+
+        return panel;
+    }
+    private static JPanel createCountryListPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel("Country List", SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.add(label, BorderLayout.NORTH);
+
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> switchPanel("MainAppPanel"));
+        panel.add(backButton, BorderLayout.SOUTH);
+
+        // Add country list logic and components here
+
+        return panel;
+    }
+
+
 }
 
 
