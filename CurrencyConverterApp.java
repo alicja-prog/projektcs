@@ -39,8 +39,12 @@ public class CurrencyConverterApp {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 400);
         frame.setLocationRelativeTo(null);
-
+        // Adding panel to frame and displaying it
+        frame.add(getCurrencyConverterPanel());
+        frame.setVisible(true);
+    }
         // Creating main panel
+    public static JPanel getCurrencyConverterPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -136,11 +140,9 @@ public class CurrencyConverterApp {
             panel.add(countryButton, gbc);
             gbc.gridx++;
         }
-
-        // Adding panel to frame and displaying it
-        frame.add(panel);
-        frame.setVisible(true);
+        return panel;
     }
+
 
     private static void showCountryInfo(Country country) {
         // Show country info and currency rate calculator for the respective currency

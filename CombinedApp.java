@@ -34,6 +34,8 @@ public class CombinedApp {
 
 
     public static void main(String[] args) {
+        loadAccountsFromFile();
+        currencyRates=CurrencyRateLoader.loadCurrencyRates();
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Combined Application");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -57,7 +59,7 @@ public class CombinedApp {
     }
 
     // Helper method to switch panels
-    private static void switchPanel(String panelName) {
+    public static void switchPanel(String panelName) {
         cardLayout.show(mainPanel, panelName);
     }
 
@@ -83,7 +85,7 @@ public class CombinedApp {
     }
 */
 
-    private static void createInitialPanel2() {
+    /*private static void createInitialPanel2() {
         JFrame frame = new JFrame("Account Login");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -120,7 +122,7 @@ public class CombinedApp {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
-    }
+    }*/
 
     private static void createAndShowLoginGUI() {
         JFrame frame = new JFrame("Login System");
@@ -414,7 +416,8 @@ public class CombinedApp {
         panel.add(backButton, BorderLayout.SOUTH);
 
         // Add conversion logic and components here
-
+        JPanel currencyPanel=CurrencyConverterApp.getCurrencyConverterPanel();
+        panel.add(currencyPanel,BorderLayout.CENTER);
         return panel;
     }
     private static JPanel createCountryListPanel() {
@@ -428,7 +431,8 @@ public class CombinedApp {
         panel.add(backButton, BorderLayout.SOUTH);
 
         // Add country list logic and components here
-
+        JPanel countryPanel=CountryListApp.getCountryListPanel();
+        panel.add(countryPanel,BorderLayout.CENTER);
         return panel;
     }
 

@@ -32,6 +32,11 @@ public class CountryListApp {
         frame.setSize(400, 300);
         frame.setLocationRelativeTo(null);
 
+        frame.add(getCountryListPanel());
+        frame.setVisible(true);
+    }
+
+    public static JPanel getCountryListPanel() {
         JList<String> countryList = new JList<>(COUNTRIES.toArray(new String[0]));
         countryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane listScrollPane = new JScrollPane(countryList);
@@ -51,9 +56,10 @@ public class CountryListApp {
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(listScrollPane, BorderLayout.CENTER);
 
-        frame.add(panel);
-        frame.setVisible(true);
+        return panel;
+
     }
+
 
     private static void showCountryInfo(String country) {
         // Get the currency code for the selected country
@@ -82,7 +88,8 @@ public class CountryListApp {
         // Create the calculator button
         JButton calculatorButton = new JButton("Open Currency Calculator");
         calculatorButton.addActionListener(e -> {
-            CurrencyConverterApp.main(currencyRates); // Pass the currency rates to the CurrencyConverterApp
+            CombinedApp.switchPanel("CurrencyConverterPanel");
+            //CurrencyConverterApp.main(currencyRates); // Pass the currency rates to the CurrencyConverterApp
             dialog.dispose(); // Close the dialog after opening the calculator
         });
 
