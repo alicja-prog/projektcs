@@ -14,18 +14,8 @@ public class CombinedApp {
     private static final String FILE_NAME = "accounts.txt";
     private static Map<String, String> users = new HashMap<>(); // Stores username and password
 
-    // List of all countries
-    private static final List<String> COUNTRIES = Arrays.asList(
-            "Andorra", "Australia", "Austria", "Belarus", "Belgium", "Bulgaria", "Canada", "Chile", "China",
-            "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hong Kong",
-            "Hungary", "India", "Indonesia", "Ireland", "Israel", "Italy", "Japan", "Kosovo", "Latvia",
-            "Lithuania", "Luxembourg", "Malta", "Mexico", "Monaco", "Montenegro", "New Zealand", "Norway",
-            "Philippines", "Poland", "Portugal", "Republic of South Africa", "Romania", "Slovakia",
-            "Slovenia", "Singapore", "Spain", "Sweden", "Switzerland", "Thailand", "Turkey", "United Kingdom",
-            "United States", "Vatican City"
-    );
     // Variable to hold currency rates
-    private static Map<String, Double> currencyRates;
+    //private static Map<String, Double> currencyRates;
 
 
     private static CardLayout cardLayout = new CardLayout();
@@ -35,7 +25,6 @@ public class CombinedApp {
 
     public static void main(String[] args) {
         loadAccountsFromFile();
-        currencyRates=CurrencyRateLoader.loadCurrencyRates();
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Combined Application");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -68,8 +57,13 @@ public class CombinedApp {
         return users.containsKey(username) && users.get(username).equals(password);
     }
 
-    private static void registerUser(String username, String password) {
+    private static boolean registerUser(String username, String password) {
+        if (users.containsKey(username)){
+            return false;
+        }
         users.put(username, password);
+        saveAccountToFile(username, password); // Save the new account to the file
+        return true;
     }
 
 
@@ -124,88 +118,6 @@ public class CombinedApp {
         frame.setLocationRelativeTo(null);
     }*/
 
-    private static void createAndShowLoginGUI() {
-        JFrame frame = new JFrame("Login System");
-
-        JPanel loginPanel = new JPanel();
-        loginPanel.setLayout(new BoxLayout(loginPanel, BoxLayout.Y_AXIS));
-
-        // Login field
-        loginPanel.add(new JLabel("Login:"));
-        JTextField usernameField = new JTextField(15);
-        usernameField.setPreferredSize(new Dimension(200, 30)); // Setting size
-        loginPanel.add(usernameField);
-
-        loginPanel.add(Box.createVerticalStrut(5)); // Spacer
-
-        // Password field
-        loginPanel.add(new JLabel("Password:"));
-        JPasswordField passwordField = new JPasswordField(15);
-        passwordField.setPreferredSize(new Dimension(200, 30)); // Setting size
-        loginPanel.add(passwordField);
-
-        // Login Button
-        JButton loginButton = new JButton("Login");
-        loginButton.setPreferredSize(new Dimension(100, 40)); // Set preferred size for button
-        loginButton.addActionListener(e -> {
-            String username = usernameField.getText();
-            String password = new String(passwordField.getPassword());
-            handleLogin(username, password); // Handle the login process
-        });
-        loginPanel.add(loginButton);
-
-        // Set up the login frame
-        frame.add(loginPanel);
-        frame.setSize(400, 200);
-        frame.setLocationRelativeTo(null); // Center the window on the screen
-        frame.setVisible(true);
-    }
-
-    private static void handleLogin(String username, String password) {
-        // Check if user exists in the map for login
-        if (users.containsKey(username) && users.get(username).equals(password)) {
-            JOptionPane.showMessageDialog(null, "Login successful!");
-            createAndShowMainGUI(); // Proceed to main application on success
-        } else {
-            JOptionPane.showMessageDialog(null, "Login error. Try again.");
-        }
-    }
-
-    private static void handleRegister() {
-        JPanel registerPanel = new JPanel();
-        registerPanel.setLayout(new BoxLayout(registerPanel, BoxLayout.Y_AXIS));
-
-        JTextField newUsernameField = new JTextField(10);
-        JPasswordField newPasswordField = new JPasswordField(10);
-
-        registerPanel.add(new JLabel("New Username:"));
-        registerPanel.add(newUsernameField);
-        registerPanel.add(Box.createVerticalStrut(5));
-        registerPanel.add(new JLabel("New Password:"));
-        registerPanel.add(newPasswordField);
-
-        int registerResult = JOptionPane.showConfirmDialog(null, registerPanel, "Register", JOptionPane.OK_CANCEL_OPTION);
-
-        if (registerResult == JOptionPane.OK_OPTION) {
-            String newUsername = newUsernameField.getText();
-            String newPassword = new String(newPasswordField.getPassword());
-
-            if (newUsername.isEmpty() || newPassword.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Username and password cannot be empty.");
-                return;
-            }
-
-            // Check if username already exists
-            if (users.containsKey(newUsername)) {
-                JOptionPane.showMessageDialog(null, "Username already exists.");
-            } else {
-                users.put(newUsername, newPassword); // Store new user in the map
-                saveAccountToFile(newUsername, newPassword); // Save the new account to the file
-                JOptionPane.showMessageDialog(null, "Registration successful! You can now log in.");
-            }
-        }
-    }
-
     private static void saveAccountToFile(String username, String password) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
             writer.write(username + "," + password);
@@ -227,26 +139,6 @@ public class CombinedApp {
         } catch (IOException e) {
             e.printStackTrace(); // Handle potential IO exceptions
         }
-    }
-
-    public static void createAndShowMainGUI() {
-        JFrame frame = new JFrame("Countries’ Data Concerning Costs of Living");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(600, 400);
-        frame.setLocationRelativeTo(null);
-
-        JLabel titleLabel = new JLabel("Countries' Data Concerning Costs of Living", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(titleLabel, BorderLayout.NORTH);
-
-        JButton countryListButton = new JButton("Show Country List");
-        countryListButton.addActionListener(e -> CountryListApp.createAndShowGUI()); // Open the country list
-
-        panel.add(countryListButton, BorderLayout.CENTER);
-
-        frame.add(panel);
-        frame.setVisible(true);
     }
 
     //---------
@@ -376,11 +268,14 @@ public class CombinedApp {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
             if (!username.isEmpty() && !password.isEmpty()) {
-                registerUser(username, password);
-                JOptionPane.showMessageDialog(null, "Registration successful!");
-                switchPanel("LoginPanel");
+                if (registerUser(username, password)) {
+                    JOptionPane.showMessageDialog(null, "Registration successful!");
+                    switchPanel("LoginPanel");
+                } else{
+                    JOptionPane.showMessageDialog(null,"Registration failed. Account already exists.");
+                }
             } else {
-                JOptionPane.showMessageDialog(null, "Fields cannot be empty.");
+                JOptionPane.showMessageDialog(null, "Registration failed. Fields cannot be empty.");
             }
         });
 

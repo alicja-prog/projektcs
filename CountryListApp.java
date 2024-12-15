@@ -4,15 +4,14 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+
 public class CountryListApp {
 
     private static final List<String> COUNTRIES = Arrays.asList(
@@ -24,7 +23,7 @@ public class CountryListApp {
             "Switzerland", "Thailand", "Turkey", "United Kingdom", "United States", "Vatican City"
     );
 
-    private static Map<String, Double> currencyRates = loadCurrencyRates(); // Load rates
+    private static Map<String, Double> currencyRates=loadCurrencyRates(); // Load rates
 
     public static void createAndShowGUI() {
         JFrame frame = new JFrame("Country List");
@@ -58,6 +57,13 @@ public class CountryListApp {
 
         return panel;
 
+    }
+    public static List<Country> getAllCountries(){
+        List<Country> countryList=new ArrayList<>();
+        for (int i = 0; i < COUNTRIES.size(); i++) {
+            countryList.add(new Country(COUNTRIES.get(i),getCurrencyCode(COUNTRIES.get(i))));
+        }
+        return countryList;
     }
 
 
