@@ -13,15 +13,10 @@ public class CombinedApp {
 
     private static final String FILE_NAME = "accounts.txt";
     private static Map<String, String> users = new HashMap<>(); // Stores username and password
-
-    // Variable to hold currency rates
-    //private static Map<String, Double> currencyRates;
-
-
     private static CardLayout cardLayout = new CardLayout();
     private static JPanel mainPanel = new JPanel(cardLayout);
 
-
+    private CountryListApp countryListApp;
 
     public static void main(String[] args) {
         loadAccountsFromFile();
@@ -143,6 +138,8 @@ public class CombinedApp {
 
     //---------
     // from chatgpt
+
+
     private static JPanel createInitialPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel label = new JLabel("Do you have an account?", SwingConstants.CENTER);
@@ -328,7 +325,10 @@ public class CombinedApp {
         // Add country list logic and components here
         JPanel countryPanel=CountryListApp.getCountryListPanel();
         panel.add(countryPanel,BorderLayout.CENTER);
+
         return panel;
+
+
     }
 
 

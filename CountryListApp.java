@@ -23,7 +23,8 @@ public class CountryListApp {
             "Switzerland", "Thailand", "Turkey", "United Kingdom", "United States", "Vatican City"
     );
 
-    private static Map<String, Double> currencyRates=loadCurrencyRates(); // Load rates
+
+    private static Map<String, Double> currencyRates=CurrencyConverterApp.loadCurrencyRates(); // Load rates
 
     public static void createAndShowGUI() {
         JFrame frame = new JFrame("Country List");
@@ -95,7 +96,7 @@ public class CountryListApp {
         JButton calculatorButton = new JButton("Open Currency Calculator");
         calculatorButton.addActionListener(e -> {
             CombinedApp.switchPanel("CurrencyConverterPanel");
-            //CurrencyConverterApp.main(currencyRates); // Pass the currency rates to the CurrencyConverterApp
+            CurrencyConverterApp.switchCountryOfInterest(currencyCode); 
             dialog.dispose(); // Close the dialog after opening the calculator
         });
 
@@ -107,46 +108,6 @@ public class CountryListApp {
         // Add the main panel to the dialog
         dialog.add(panel);
         dialog.setVisible(true); // Show the dialog
-    }
-
-    private static Map<String, Double> loadCurrencyRates() {
-        Map<String, Double> rates = new HashMap<>();
-        try {
-            // Connect to the NBP API
-            String url = "https://api.nbp.pl/api/exchangerates/tables/A/?format=json";
-            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Accept-Charset", "UTF-8");
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
-            StringBuilder response = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-            reader.close();
-
-            // Parse JSON response
-            String jsonResponse = response.toString();
-            String ratesSection = jsonResponse.split("\"rates\":\\[")[1].split("]")[0];
-            String[] currencyEntries = ratesSection.split("},\\{");
-
-            for (String entry : currencyEntries) {
-                entry = entry.replace("{", "").replace("}", "");
-                try {
-                    String currencyCode = entry.split("\"code\":\"")[1].split("\"")[0].trim();
-                    Double rate = Double.valueOf(entry.split("\"mid\":")[1].trim());
-
-                    rates.put(currencyCode, rate);
-                } catch (Exception e) {
-                    System.out.println("Error processing entry: " + entry);
-                }
-            }
-            rates.put("PLN", 1.0); // Add Polish złoty
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return rates; // Zwróć mapę z kursami walut
     }
 
     private static String getCurrencyCode(String country) {

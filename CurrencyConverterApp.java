@@ -24,14 +24,14 @@ public class CurrencyConverterApp {
             // Add more countries as needed
     };
 
-    public static void main(Map<String, Double> args) {
+    private static String selectedCountryCode = "EUR";
+
+   private static Map<String, Double> currencyRates; // This should be set properly when launching the app.
+
+    public static void main(String[] args) {
+        currencyRates = loadCurrencyRates(); // Assign the currency rates passed from CountryListApp
         SwingUtilities.invokeLater(CurrencyConverterApp::createAndShowGUI);
     }
-    /*private static Map<String, Double> currencyRates; // This should be set properly when launching the app.
-
-    public static void main(Map<String, Double> rates) {
-        currencyRates = rates; // Assign the currency rates passed from CountryListApp
-        SwingUtilities.invokeLater(CurrencyConverterApp::createAndShowGUI);*/
 
     public static void createAndShowGUI() {
         // Creating the frame
@@ -43,7 +43,8 @@ public class CurrencyConverterApp {
         frame.add(getCurrencyConverterPanel());
         frame.setVisible(true);
     }
-        // Creating main panel
+
+    // Creating main panel
     public static JPanel getCurrencyConverterPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -51,12 +52,12 @@ public class CurrencyConverterApp {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Title label
-        JLabel titleLabel = new JLabel("Currency Converter", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        panel.add(titleLabel, gbc);
+//        JLabel titleLabel = new JLabel("Currency Converter", SwingConstants.CENTER);
+//        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+//        gbc.gridx = 0;
+//        gbc.gridy = 0;
+//        gbc.gridwidth = 2;
+//        panel.add(titleLabel, gbc);
 
         // Creating currency conversion components (existing code)
 
@@ -91,7 +92,7 @@ public class CurrencyConverterApp {
         panel.add(wantLabel, gbc);
 
         JComboBox<String> wantCurrency = new JComboBox<>(loadCurrencyRates().keySet().toArray(new String[0]));
-        wantCurrency.setSelectedItem("EUR");
+        wantCurrency.setSelectedItem(selectedCountryCode);
         gbc.gridx = 1;
         gbc.gridy = 3;
         panel.add(wantCurrency, gbc);
@@ -152,7 +153,7 @@ public class CurrencyConverterApp {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private static Map<String, Double> loadCurrencyRates() {
+    public static Map<String, Double> loadCurrencyRates() {
         Map<String, Double> rates = new HashMap<>();
         try {
             // Connect to the NBP API
@@ -194,23 +195,8 @@ public class CurrencyConverterApp {
         return rates;
     }
 
-    // Class to hold country information
-    static class Country {
-        private final String name;
-        private final String currency;
-
-        public Country(String name, String currency) {
-            this.name = name;
-            this.currency = currency;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getCurrency() {
-            return currency;
-        }
+    public static void  switchCountryOfInterest(String currencyCode) {
+        selectedCountryCode = currencyCode;
     }
 }
 
