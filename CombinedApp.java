@@ -2,6 +2,7 @@ package com.example.internal;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.HierarchyEvent;
 import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,23 +17,27 @@ public class CombinedApp {
     private static CardLayout cardLayout = new CardLayout();
     private static JPanel mainPanel = new JPanel(cardLayout);
 
-    private CountryListApp countryListApp;
-
     public static void main(String[] args) {
         loadAccountsFromFile();
+        CurrencyConverterApp currencyConverterApp = new CurrencyConverterApp();
+        CountryListApp countryListApp = new CountryListApp(currencyConverterApp);
+
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Combined Application");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(600, 400);
             frame.setLocationRelativeTo(null);
 
-            // Add all panels to the CardLayout
+            mainPanel.add(createMainAppPanel(), "MainAppPanel");
+            mainPanel.add(countryListApp.getPanel(), "CountryListPanel");
+            mainPanel.add(currencyConverterApp.getPanel(), "CurrencyConverterPanel");
+
             mainPanel.add(createInitialPanel(), "InitialPanel");
             mainPanel.add(createLoginPanel(), "LoginPanel");
             mainPanel.add(createRegisterPanel(), "RegisterPanel");
             mainPanel.add(createMainAppPanel(), "MainAppPanel");
-            mainPanel.add(createCurrencyConverterPanel(), "CurrencyConverterPanel");
-            mainPanel.add(createCountryListPanel(), "CountryListPanel");
+//            mainPanel.add(createCurrencyConverterPanel(), "CurrencyConverterPanel");
+//            mainPanel.add(createCountryListPanel(), "CountryListPanel");
 
             frame.add(mainPanel);
             frame.setVisible(true);
@@ -63,55 +68,6 @@ public class CombinedApp {
 
 
 
-
-    /*public static void main(String[] args) {
-        // Load currency rates when the application starts
-        currencyRates = CurrencyRateLoader.loadCurrencyRates(); // Call static method from CurrencyRateLoader
-        // Load existing accounts from the file
-        loadAccountsFromFile();
-        // Create and show the initial panel asking if the user has an account
-        SwingUtilities.invokeLater(CombinedApp::createInitialPanel);
-    }
-*/
-
-    /*private static void createInitialPanel2() {
-        JFrame frame = new JFrame("Account Login");
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-        JLabel questionLabel = new JLabel("Do you have an account?");
-        questionLabel.setFont(new Font("Arial", Font.BOLD, 24)); // Set font size
-        questionLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the label
-        panel.add(questionLabel);
-
-        panel.add(Box.createVerticalStrut(20)); // Space between label and buttons
-
-        // Create a panel for buttons
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-
-        // Yes button for login
-        JButton loginButton = new JButton("Yes");
-        loginButton.setPreferredSize(new Dimension(150, 50)); // Set button size
-        loginButton.addActionListener(e -> createAndShowLoginGUI());
-        buttonPanel.add(loginButton);
-
-        // No button for registration
-        JButton registerButton = new JButton("No");
-        registerButton.setPreferredSize(new Dimension(150, 50)); // Set button size
-        registerButton.addActionListener(e -> handleRegister());
-        buttonPanel.add(registerButton);
-
-        // Center the button panel
-        buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(buttonPanel);
-
-        // Setting up the window
-        frame.add(panel);
-        frame.setSize(600, 300);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-        frame.setLocationRelativeTo(null);
-    }*/
 
     private static void saveAccountToFile(String username, String password) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
@@ -204,6 +160,7 @@ public class CombinedApp {
         gbc.gridy = 4;
         panel.add(backButton, gbc);
 
+
         loginButton.addActionListener(e -> {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
@@ -214,9 +171,14 @@ public class CombinedApp {
                 JOptionPane.showMessageDialog(null, "Invalid credentials. Try again.");
             }
         });
-
+        panel.addHierarchyListener(e -> {
+            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0 && panel.isShowing()) {
+                SwingUtilities.getRootPane(panel).setDefaultButton(loginButton);
+            }
+        });
         return panel;
     }
+
     private static JPanel createRegisterPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -296,39 +258,6 @@ public class CombinedApp {
         panel.add(buttonPanel, BorderLayout.CENTER);
 
         return panel;
-    }
-    private static JPanel createCurrencyConverterPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Currency Converter", SwingConstants.CENTER);
-        label.setFont(new Font("Arial", Font.BOLD, 24));
-        panel.add(label, BorderLayout.NORTH);
-
-        JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> switchPanel("MainAppPanel"));
-        panel.add(backButton, BorderLayout.SOUTH);
-
-        // Add conversion logic and components here
-        JPanel currencyPanel=CurrencyConverterApp.getCurrencyConverterPanel();
-        panel.add(currencyPanel,BorderLayout.CENTER);
-        return panel;
-    }
-    private static JPanel createCountryListPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Country List", SwingConstants.CENTER);
-        label.setFont(new Font("Arial", Font.BOLD, 24));
-        panel.add(label, BorderLayout.NORTH);
-
-        JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> switchPanel("MainAppPanel"));
-        panel.add(backButton, BorderLayout.SOUTH);
-
-        // Add country list logic and components here
-        JPanel countryPanel=CountryListApp.getCountryListPanel();
-        panel.add(countryPanel,BorderLayout.CENTER);
-
-        return panel;
-
-
     }
 
 

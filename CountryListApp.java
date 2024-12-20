@@ -23,20 +23,21 @@ public class CountryListApp {
             "Switzerland", "Thailand", "Turkey", "United Kingdom", "United States", "Vatican City"
     );
 
+    private JPanel countryListPanel;
+    private CurrencyConverterApp currencyConverterApp;
 
-    private static Map<String, Double> currencyRates=CurrencyConverterApp.loadCurrencyRates(); // Load rates
-
-    public static void createAndShowGUI() {
-        JFrame frame = new JFrame("Country List");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.setLocationRelativeTo(null);
-
-        frame.add(getCountryListPanel());
-        frame.setVisible(true);
+    public CountryListApp(CurrencyConverterApp currencyConverterApp) {
+        this.currencyConverterApp = currencyConverterApp;
+        this.countryListPanel = createCountryListPanel();
     }
 
-    public static JPanel getCountryListPanel() {
+    // Getter for the panel
+    public JPanel getPanel() {
+        return countryListPanel;
+    }
+
+    private JPanel createCountryListPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
         JList<String> countryList = new JList<>(COUNTRIES.toArray(new String[0]));
         countryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane listScrollPane = new JScrollPane(countryList);
@@ -52,13 +53,58 @@ public class CountryListApp {
             }
         });
 
-        // Add components to create a panel for the list
-        JPanel panel = new JPanel(new BorderLayout());
         panel.add(listScrollPane, BorderLayout.CENTER);
-
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> CombinedApp.switchPanel("MainAppPanel"));
+        panel.add(backButton, BorderLayout.SOUTH);
         return panel;
-
     }
+
+    private void showCountryInfo(String country) {
+        String currencyCode = getCurrencyCode(country);
+        Double exchangeRate = this.currencyConverterApp.getCurrencyRates().get(currencyCode);
+
+        String exchangeRateInfo = (exchangeRate != null)
+                ? String.format("Exchange Rate (to %s): %.4f PLN", currencyCode, exchangeRate)
+                : "Exchange Rate not available";
+
+        JDialog dialog = new JDialog();
+        dialog.setTitle("Country Information");
+        dialog.setSize(300, 150);
+        dialog.setLocationRelativeTo(null);
+        dialog.setModal(true);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel messageLabel = new JLabel("<html>You selected: " + country + "<br>" + exchangeRateInfo + "</html>", SwingConstants.CENTER);
+        panel.add(messageLabel, BorderLayout.CENTER);
+
+        JButton calculatorButton = new JButton("Open Currency Calculator");
+        calculatorButton.addActionListener(e -> {
+            currencyConverterApp.setSelectedCountryCode(currencyCode);
+            CombinedApp.switchPanel("CurrencyConverterPanel");
+            dialog.dispose();
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(calculatorButton);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.add(panel);
+        dialog.setVisible(true);
+    }
+
+
+    public  void createAndShowGUI() {
+        JFrame frame = new JFrame("Country List");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(400, 300);
+        frame.setLocationRelativeTo(null);
+
+        frame.add(getPanel());
+        frame.setVisible(true);
+    }
+
+
     public static List<Country> getAllCountries(){
         List<Country> countryList=new ArrayList<>();
         for (int i = 0; i < COUNTRIES.size(); i++) {
@@ -68,47 +114,6 @@ public class CountryListApp {
     }
 
 
-    private static void showCountryInfo(String country) {
-        // Get the currency code for the selected country
-        String currencyCode = getCurrencyCode(country);
-        Double exchangeRate = currencyRates.get(currencyCode);
-
-        String exchangeRateInfo = (exchangeRate != null)
-                ? String.format("Exchange Rate (to %s): %.4f PLN", currencyCode, exchangeRate)
-                : "Exchange Rate not available";
-
-        // Create a new dialog for displaying country info
-        JDialog dialog = new JDialog();
-        dialog.setTitle("Country Information");
-        dialog.setSize(300, 150);
-        dialog.setLocationRelativeTo(null);
-        dialog.setModal(true); // This makes the dialog modal
-
-        // Create a panel to hold the message and the button
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-
-        // Add the message
-        JLabel messageLabel = new JLabel("<html>You selected: " + country + "<br>" + exchangeRateInfo + "</html>", SwingConstants.CENTER);
-        panel.add(messageLabel, BorderLayout.CENTER);
-
-        // Create the calculator button
-        JButton calculatorButton = new JButton("Open Currency Calculator");
-        calculatorButton.addActionListener(e -> {
-            CombinedApp.switchPanel("CurrencyConverterPanel");
-            CurrencyConverterApp.switchCountryOfInterest(currencyCode); 
-            dialog.dispose(); // Close the dialog after opening the calculator
-        });
-
-        // Add button to the bottom of the panel
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(calculatorButton);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-
-        // Add the main panel to the dialog
-        dialog.add(panel);
-        dialog.setVisible(true); // Show the dialog
-    }
 
     private static String getCurrencyCode(String country) {
         // Mapowanie krajów na kody walut
