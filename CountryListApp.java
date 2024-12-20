@@ -23,6 +23,7 @@ public class CountryListApp {
             "Switzerland", "Thailand", "Turkey", "United Kingdom", "United States", "Vatican City"
     );
 
+
     private JPanel countryListPanel;
     private CurrencyConverterApp currencyConverterApp;
 

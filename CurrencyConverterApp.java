@@ -146,9 +146,10 @@ public class CurrencyConverterApp {
 
     private String[] createLabelArray() {
         String[] array = this.currencyRates.keySet().toArray(new String[0]);
-        for (int i = 0; i < array.length; i++) {
-            array[i] = array[i]
-        }
+//        for (int i = 0; i < array.length; i++) {
+//            array[i] = array[i];
+//        } TODO
+        return array;
     }
 
 
