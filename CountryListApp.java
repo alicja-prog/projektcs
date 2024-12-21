@@ -4,8 +4,15 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
+import javax.swing.DefaultListModel;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+
 
 public class CountryListApp {
 
@@ -36,7 +43,13 @@ public class CountryListApp {
 
     private JPanel createCountryListPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        JList<String> countryList = new JList<>(COUNTRIES.toArray(new String[0]));
+        // Create the country list model and JList
+        DefaultListModel<String> countryListModel = new DefaultListModel<>();
+
+        for (String country : COUNTRIES) {
+            countryListModel.addElement(country);
+        }
+        JList<String> countryList = new JList<>(countryListModel);
         countryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane listScrollPane = new JScrollPane(countryList);
 
@@ -46,12 +59,96 @@ public class CountryListApp {
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     String selectedCountry = countryList.getSelectedValue();
-                    showCountryInfo(selectedCountry); // Call method to show info
+                    if (!selectedCountry.equals("No matches found")) {
+                        showCountryInfo(selectedCountry); // Call method to show info
+
+
+                    }    }
+            }
+        });
+        // Create the search bar (loupe)
+        JTextField searchField = new JTextField();
+        searchField.setText("Search");
+        searchField.setForeground(Color.GRAY); // Placeholder text color
+
+        searchField.addFocusListener(new java.awt.event.FocusListener() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent e) {
+                if (searchField.getText().equals("Search")) {
+                    searchField.setText("");
+                    searchField.setForeground(Color.BLACK); // User input text color
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (searchField.getText().isEmpty()) {
+                    searchField.setText("Search");
+                    searchField.setForeground(Color.GRAY); // Placeholder text color
                 }
             }
         });
+        /*searchField.addKeyListener(new java.awt.event.KeyAdapter(){
+                @Override
+                public void keyTyped (java.awt.event.KeyEvent e){
+                if (searchField.getText().equals("Search")) {
+                    searchField.setText("");
+                    searchField.setForeground(Color.BLACK); // Change to input text color
+                }
+            }
 
-        panel.add(listScrollPane, BorderLayout.CENTER);
+    });
+*/
+
+        searchField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                System.out.println("Insert event detected."); // Debugging
+                filterList();
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                System.out.println("Change event detected."); // Debugging
+                filterList();
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                filterList();
+            }
+
+            // Filter the country list based on the search bar input
+            private void filterList() {
+                String filterText = searchField.getText().toLowerCase();
+                System.out.println("Filtering for: " + filterText); // Debug log
+                countryListModel.clear();
+
+                System.out.println("Filtering for: " + filterText); // Debugging
+
+                for (String country : COUNTRIES) {
+                    String lowerCaseCountry = country.toLowerCase();
+
+                    // Match the beginning of the name, whole name, or first letter
+                    if (lowerCaseCountry.startsWith(filterText)) {
+                        countryListModel.addElement(country);
+                        System.out.println("Matched: " + country); // Debugging
+                    }
+                }
+
+                // If no match is found, add a message to the list
+                if (countryListModel.isEmpty()) {
+                    countryListModel.addElement("No matches found");
+                    System.out.println("No matches found."); // Debugging
+                }
+            }
+        });System.out.println("Updated list size: " + countryListModel.getSize()); // Debugging
+
+        // Add components to the panel
+        panel.add(searchField, BorderLayout.NORTH); // Add search bar at the top
+        panel.add(listScrollPane, BorderLayout.CENTER); // Add the list in the center
+
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> combinedApp.switchPanel("MainAppPanel"));
         panel.add(backButton, BorderLayout.SOUTH);
@@ -68,13 +165,54 @@ public class CountryListApp {
 
         JDialog dialog = new JDialog();
         dialog.setTitle("Country Information");
-        dialog.setSize(300, 150);
+        dialog.setSize(300, 200);
         dialog.setLocationRelativeTo(null);
         dialog.setModal(true);
 
         JPanel panel = new JPanel(new BorderLayout());
         JLabel messageLabel = new JLabel("<html>You selected: " + country + "<br>" + exchangeRateInfo + "</html>", SwingConstants.CENTER);
         panel.add(messageLabel, BorderLayout.CENTER);
+
+        // Create heart button
+        JButton heartButton = new JButton();
+        heartButton.setPreferredSize(new Dimension(50, 50));
+        heartButton.setOpaque(true);
+        heartButton.setContentAreaFilled(true);
+
+        User currentUser = combinedApp.getLoggedInUser();
+        boolean isFavorited = currentUser != null && currentUser.isFavoriteCountry(country);
+        updateHeartIcon(heartButton, isFavorited);
+
+        // Add action listener to toggle heart state
+        heartButton.addActionListener(new ActionListener() {
+            private boolean favoriteState = isFavorited;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (currentUser != null) {
+                    favoriteState = !favoriteState;
+                    updateHeartIcon(heartButton, favoriteState);
+                    if (favoriteState) {
+                        currentUser.addFavouriteCountry(new Country(country, currencyCode));
+                        System.out.println("Added to favorites: " + country);
+                    } else {
+                        currentUser.removeFavouriteCountry(country);
+                        System.out.println("Removed from favorites: " + country);
+                    }
+                    combinedApp.saveAccountToFile(currentUser.getUsername(), currentUser.getPassword());
+                } else {
+                    JOptionPane.showMessageDialog(dialog, "You must be logged in to favorite a country.");
+                }
+            }
+        });
+
+        // Add heart button below exchange rate info
+        JPanel heartPanel = new JPanel();
+        // Center-align the button
+        heartPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        heartPanel.add(heartButton);
+
+        panel.add(heartPanel, BorderLayout.NORTH);
 
         JButton calculatorButton = new JButton("Open Currency Calculator");
         calculatorButton.addActionListener(e -> {
@@ -85,10 +223,27 @@ public class CountryListApp {
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(calculatorButton);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
+        panel.add(buttonPanel, BorderLayout.SOUTH); //przed było south
 
         dialog.add(panel);
         dialog.setVisible(true);
+
+
+    }
+
+    private void updateHeartIcon(JButton heartButton, boolean isFavorited) {
+        Font heartFont = new Font("Serif", Font.PLAIN, 30); // Large font size for the heart
+        heartButton.setFont(heartFont); // Set font for the heart button
+        heartButton.setMargin(new Insets(0, 0, 0, 0)); // Remove extra padding
+        heartButton.setHorizontalAlignment(SwingConstants.CENTER); // Center-align the heart
+
+        if (isFavorited) {
+            heartButton.setText("\u2665"); // Full heart
+            heartButton.setForeground(Color.RED);
+        } else {
+            heartButton.setText("\u2661"); // Outlined heart
+            heartButton.setForeground(Color.RED);
+        }
     }
 
 

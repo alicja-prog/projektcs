@@ -6,12 +6,16 @@ import java.awt.event.HierarchyEvent;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+
+
 
 public class CombinedApp {
 
 
     private static final String FILE_NAME = "accounts.txt";
-    private  Map<String, String> users = new HashMap<>(); // Stores username and password
+    private  Map<String, User> users = new HashMap<>(); // Stores username and password
     private  CardLayout cardLayout = new CardLayout();
     private  JPanel mainPanel = new JPanel(cardLayout);
     private CurrencyConverterApp currencyConverterApp;
@@ -58,28 +62,53 @@ public class CombinedApp {
 
     // Dummy methods for user data handling
     private boolean validateLogin(String username, String password) {
-        return users.containsKey(username) && users.get(username).equals(password);
+        System.out.println("Validating username: " + username + ", password: " + password); // Debugging
+        if (users.containsKey(username)) {
+            System.out.println("User found: " + username); // Debugging
+            boolean passwordMatch = users.get(username).getPassword().equals(password);
+            System.out.println("Password match: " + passwordMatch); // Debugging
+            return passwordMatch;
+        } else {
+            System.out.println("User not found: " + username); // Debugging
+        }
+        return false;
+    }
+    /*    return users.containsKey(username) && users.get(username).equals(password);
     }
     private void login(User user) {
         this.loggedInUser = user;
     }
-
+*/// NA CHWILE
+    private void login(User user) {
+        this.loggedInUser = user;
+    }
     private boolean registerUser(String username, String password) {
+        System.out.println("Registering username: " + username); // Debugging
         if (users.containsKey(username)){
+            System.out.println("Username already exists: " + username); // Debugging
             return false;
         }
-        users.put(username, password);
+        User newUser = new User(username, password);
+        users.put(username, newUser);
         saveAccountToFile(username, password); // Save the new account to the file
+        System.out.println("User registered: " + username); // Debugging
         return true;
     }
 
-
-
-
-    private static void saveAccountToFile(String username, String password) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
-            writer.write(username + "," + password);
-            writer.newLine(); // Write each account on a new line
+    public void saveAccountToFile(String username, String password) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
+            for (User user : users.values()) {
+                StringBuilder favorites = new StringBuilder();
+                for (Country country : user.getFavouriteCountries()) {
+                    if (favorites.length() > 0) {
+                        favorites.append("|");
+                    }
+                    favorites.append(country.getName()).append(":").append(country.getCurrency());
+                }
+                String line = user.getUsername() + "," + user.getPassword() + "," + favorites.toString();
+                writer.write(line);
+                writer.newLine();
+            }
         } catch (IOException e) {
             e.printStackTrace(); // Handle potential IO exceptions
         }
@@ -89,9 +118,26 @@ public class CombinedApp {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = reader.readLine()) != null) {
+                System.out.println("Reading line: " + line); // Debugging
                 String[] data = line.split(",");
-                if (data.length == 2) { // Ensure we have both username and password
-                    users.put(data[0], data[1]); // Load user into the map
+                if (data.length >= 2) { // Ensure we have both username and password
+                    String username = data[0];
+                    String password = data[1];
+                    System.out.println("Parsed username: " + username + ", password: " + password); // Debugging
+                    List<Country> favoriteCountries = new ArrayList<>();
+                    if (data.length == 3 && !data[2].isEmpty()) { // Check for favorite countries
+                        String[] countries = data[2].split("\\|");
+                        for (String countryData : countries) {
+                            String[] countryInfo = countryData.split(":");
+                            if (countryInfo.length == 2) {
+                                favoriteCountries.add(new Country(countryInfo[0], countryInfo[1]));
+                            }
+                        }
+                    }
+
+                    User user = new User(username, password);
+                    user.setFavouriteCountries(favoriteCountries);
+                    users.put(username, user);
                 }
             }
         } catch (IOException e) {
