@@ -2,45 +2,46 @@ package com.example.internal;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CurrencyConverterApp {
 
     // Sample country data - in a real application, this could be loaded from a database or an API
-    private static final Country[] COUNTRIES = {
-            new Country("United States", "USD"),
-            new Country("Eurozone", "EUR"),
-            new Country("United Kingdom", "GBP"),
-            new Country("Japan", "JPY"),
-            new Country("Poland", "PLN"),
-            // Add more countries as needed
-    };
+    private CombinedApp combinedApp;
     private JPanel currencyConverterPanel; // Attribute for the panel
-    private String selectedCountryCode = "EUR"; // Default value
+    private String wantCurrencyCode = "EUR"; // Default value
     private Map<String, Double> currencyRates;
+    private String haveCurrencyCode = "PLN";
+    private double amount = 100;
 
-    public CurrencyConverterApp() {
+    public CurrencyConverterApp(CombinedApp combinedApp) {
+        this.combinedApp = combinedApp;
         this.currencyRates = loadCurrencyRates();
         this.currencyConverterPanel = createCurrencyConverterPanel();
     }
 
+    public JPanel updatePanel() {
+        currencyConverterPanel = createCurrencyConverterPanel();
+        return currencyConverterPanel;
+    }
     // Getter for the panel
     public JPanel getPanel() {
         return currencyConverterPanel;
     }
 
     // Method to update the selected currency
-    public void setSelectedCountryCode(String currencyCode) {
-        this.selectedCountryCode = currencyCode;
+    public void setWantCurrencyCode(String currencyCode) {
+        this.wantCurrencyCode = currencyCode;
+    }
+    public void setHaveCurrencyCode(String currencyCode) {
+        this.haveCurrencyCode = currencyCode;
     }
 
     private JPanel createCurrencyConverterPanel() {
@@ -65,7 +66,7 @@ public class CurrencyConverterApp {
 
         gbc.gridx = 1;
         gbc.weightx = 0.7; // Stretch the field to fill the remaining space
-        JTextField amountField = new JTextField("100.00");
+        JTextField amountField = new JTextField(String.valueOf(amount));
         centerPanel.add(amountField, gbc);
 
 // "I have" label and dropdown
@@ -77,7 +78,7 @@ public class CurrencyConverterApp {
         gbc.gridx = 1;
         gbc.weightx = 0.7;
         JComboBox<String> haveCurrency = new JComboBox<>(createLabelArray());
-        haveCurrency.setSelectedItem("PLN");
+        haveCurrency.setSelectedItem(haveCurrencyCode);
         centerPanel.add(haveCurrency, gbc);
 
 // "I want" label and dropdown
@@ -89,7 +90,7 @@ public class CurrencyConverterApp {
         gbc.gridx = 1;
         gbc.weightx = 0.7;
         JComboBox<String> wantCurrency = new JComboBox<>(createLabelArray());
-        wantCurrency.setSelectedItem(selectedCountryCode);
+        wantCurrency.setSelectedItem(wantCurrencyCode);
         centerPanel.add(wantCurrency, gbc);
 
 // Result label
@@ -100,7 +101,8 @@ public class CurrencyConverterApp {
 
         gbc.gridx = 1;
         gbc.weightx = 0.7;
-        JLabel resultLabel = new JLabel("100.00 PLN = 23.38 EUR");
+        String resultLabelString = "Click 'Convert' button to calculate";
+        JLabel resultLabel = new JLabel(resultLabelString);
         centerPanel.add(resultLabel, gbc);
 
 // Convert button
@@ -118,10 +120,7 @@ public class CurrencyConverterApp {
                 double amount = Double.parseDouble(amountField.getText());
                 String fromCurrency = (String) haveCurrency.getSelectedItem();
                 String toCurrency = (String) wantCurrency.getSelectedItem();
-
-                Map<String, Double> rates = loadCurrencyRates();
-                double exchangeRate = rates.get(toCurrency) / rates.get(fromCurrency);
-                double result = amount / exchangeRate;
+                double result = calculateExchangeResult(amount, fromCurrency,toCurrency);
                 resultLabel.setText(String.format("%.2f %s = %.2f %s", amount, fromCurrency, result, toCurrency));
             } catch (NumberFormatException ex) {
                 resultLabel.setText("Invalid amount entered!");
@@ -131,17 +130,28 @@ public class CurrencyConverterApp {
 
         // WEST region: Optional country buttons (if needed)
         JPanel westPanel = new JPanel(new GridLayout(0, 1, 5, 5)); // Dynamic rows, single column
-        for (Country country : COUNTRIES) {
-            JButton countryButton = new JButton(country.getName());
-            countryButton.addActionListener(e -> showCountryInfo(country));
-            westPanel.add(countryButton);
+        if (this.combinedApp.getLoggedInUser() != null) {
+            List<Country> favCountries = this.combinedApp.getLoggedInUser().getFavouriteCountries();
+            if (favCountries != null) {
+                for (Country country : favCountries) {
+                    JButton countryButton = new JButton(country.getName());
+                    countryButton.addActionListener(e -> showCountryInfo(country));
+                    westPanel.add(countryButton);
+                }
+            }
         }
         panel.add(westPanel, BorderLayout.WEST);
 
         JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> CombinedApp.switchPanel("MainAppPanel"));
+        backButton.addActionListener(e -> combinedApp.switchPanel("MainAppPanel"));
         panel.add(backButton, BorderLayout.SOUTH);
         return panel;
+    }
+
+
+    private double calculateExchangeResult(double amount, String fromCurrency, String toCurrency) {
+        double exchangeRate = this.currencyRates.get(toCurrency) / this.currencyRates.get(fromCurrency);
+        return amount / exchangeRate;
     }
 
     private String[] createLabelArray() {

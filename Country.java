@@ -3,6 +3,7 @@ package com.example.internal;
 public class Country {
     private String name;
     private String currency;
+    
 
 
     public Country(String currency, String name) {

@@ -4,60 +4,67 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.HierarchyEvent;
 import java.io.*;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CombinedApp {
 
 
     private static final String FILE_NAME = "accounts.txt";
-    private static Map<String, String> users = new HashMap<>(); // Stores username and password
-    private static CardLayout cardLayout = new CardLayout();
-    private static JPanel mainPanel = new JPanel(cardLayout);
+    private  Map<String, String> users = new HashMap<>(); // Stores username and password
+    private  CardLayout cardLayout = new CardLayout();
+    private  JPanel mainPanel = new JPanel(cardLayout);
+    private CurrencyConverterApp currencyConverterApp;
+    private CountryListApp countryListApp;
+    private JFrame mainFrame;
+    private User loggedInUser = null;
 
-    public static void main(String[] args) {
+
+    public CombinedApp() {
         loadAccountsFromFile();
-        CurrencyConverterApp currencyConverterApp = new CurrencyConverterApp();
-        CountryListApp countryListApp = new CountryListApp(currencyConverterApp);
+        currencyConverterApp= new CurrencyConverterApp(this);
+        countryListApp = new CountryListApp(this,currencyConverterApp);
+        mainFrame =  new JFrame("Combined Application");
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setSize(600, 400);
+        mainFrame.setLocationRelativeTo(null);
 
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Combined Application");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(600, 400);
-            frame.setLocationRelativeTo(null);
+        mainPanel.add(createMainAppPanel(), "MainAppPanel");
+        mainPanel.add(countryListApp.getPanel(), "CountryListPanel");
+        mainPanel.add(currencyConverterApp.getPanel(), "CurrencyConverterPanel");
 
-            mainPanel.add(createMainAppPanel(), "MainAppPanel");
-            mainPanel.add(countryListApp.getPanel(), "CountryListPanel");
-            mainPanel.add(currencyConverterApp.getPanel(), "CurrencyConverterPanel");
-
-            mainPanel.add(createInitialPanel(), "InitialPanel");
-            mainPanel.add(createLoginPanel(), "LoginPanel");
-            mainPanel.add(createRegisterPanel(), "RegisterPanel");
-            mainPanel.add(createMainAppPanel(), "MainAppPanel");
+        mainPanel.add(createInitialPanel(), "InitialPanel");
+        mainPanel.add(createLoginPanel(), "LoginPanel");
+        mainPanel.add(createRegisterPanel(), "RegisterPanel");
+        mainPanel.add(createMainAppPanel(), "MainAppPanel");
 //            mainPanel.add(createCurrencyConverterPanel(), "CurrencyConverterPanel");
 //            mainPanel.add(createCountryListPanel(), "CountryListPanel");
 
-            frame.add(mainPanel);
-            frame.setVisible(true);
+        mainFrame.add(mainPanel);
+        mainFrame.setVisible(true);
 
-            // Show the initial panel
-            cardLayout.show(mainPanel, "InitialPanel");
-        });
+        // Show the initial panel
+        cardLayout.show(mainPanel, "InitialPanel");
     }
 
     // Helper method to switch panels
-    public static void switchPanel(String panelName) {
+    public void switchPanel(String panelName) {
+        if (panelName=="CurrencyConverterPanel") {
+            mainPanel.remove(currencyConverterApp.getPanel());
+            mainPanel.add(currencyConverterApp.updatePanel(), "CurrencyConverterPanel");
+        }
         cardLayout.show(mainPanel, panelName);
     }
 
     // Dummy methods for user data handling
-    private static boolean validateLogin(String username, String password) {
+    private boolean validateLogin(String username, String password) {
         return users.containsKey(username) && users.get(username).equals(password);
     }
+    private void login(User user) {
+        this.loggedInUser = user;
+    }
 
-    private static boolean registerUser(String username, String password) {
+    private boolean registerUser(String username, String password) {
         if (users.containsKey(username)){
             return false;
         }
@@ -78,7 +85,7 @@ public class CombinedApp {
         }
     }
 
-    private static void loadAccountsFromFile() {
+    private void loadAccountsFromFile() {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -96,7 +103,7 @@ public class CombinedApp {
     // from chatgpt
 
 
-    private static JPanel createInitialPanel() {
+    private JPanel createInitialPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel label = new JLabel("Do you have an account?", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
@@ -115,7 +122,7 @@ public class CombinedApp {
 
         return panel;
     }
-    private static JPanel createLoginPanel() {
+    private JPanel createLoginPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -165,6 +172,7 @@ public class CombinedApp {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
             if (validateLogin(username, password)) {
+                login(new User(username, password));
                 JOptionPane.showMessageDialog(null, "Login successful!");
                 switchPanel("MainAppPanel");
             } else {
@@ -179,7 +187,7 @@ public class CombinedApp {
         return panel;
     }
 
-    private static JPanel createRegisterPanel() {
+    private  JPanel createRegisterPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -240,7 +248,7 @@ public class CombinedApp {
 
         return panel;
     }
-    private static JPanel createMainAppPanel() {
+    private  JPanel createMainAppPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel label = new JLabel("Main Application", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
@@ -261,6 +269,9 @@ public class CombinedApp {
     }
 
 
+    public User getLoggedInUser() {
+        return this.loggedInUser;
+    }
 }
 
 

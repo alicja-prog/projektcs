@@ -5,11 +5,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.util.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class CountryListApp {
@@ -22,14 +17,16 @@ public class CountryListApp {
             "Republic of South Africa", "Romania", "Slovakia", "Slovenia", "Singapore", "Spain", "Sweden",
             "Switzerland", "Thailand", "Turkey", "United Kingdom", "United States", "Vatican City"
     );
+    private final CombinedApp combinedApp;
 
 
     private JPanel countryListPanel;
     private CurrencyConverterApp currencyConverterApp;
 
-    public CountryListApp(CurrencyConverterApp currencyConverterApp) {
+    public CountryListApp(CombinedApp combinedApp, CurrencyConverterApp currencyConverterApp) {
         this.currencyConverterApp = currencyConverterApp;
         this.countryListPanel = createCountryListPanel();
+        this.combinedApp = combinedApp;
     }
 
     // Getter for the panel
@@ -56,7 +53,7 @@ public class CountryListApp {
 
         panel.add(listScrollPane, BorderLayout.CENTER);
         JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> CombinedApp.switchPanel("MainAppPanel"));
+        backButton.addActionListener(e -> combinedApp.switchPanel("MainAppPanel"));
         panel.add(backButton, BorderLayout.SOUTH);
         return panel;
     }
@@ -81,8 +78,8 @@ public class CountryListApp {
 
         JButton calculatorButton = new JButton("Open Currency Calculator");
         calculatorButton.addActionListener(e -> {
-            currencyConverterApp.setSelectedCountryCode(currencyCode);
-            CombinedApp.switchPanel("CurrencyConverterPanel");
+            currencyConverterApp.setWantCurrencyCode(currencyCode);
+            combinedApp.switchPanel("CurrencyConverterPanel");
             dialog.dispose();
         });
 
