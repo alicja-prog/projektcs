@@ -7,9 +7,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class CurrencyConverterApp {
 
@@ -130,8 +129,8 @@ public class CurrencyConverterApp {
 
         // WEST region: Optional country buttons (if needed)
         JPanel westPanel = new JPanel(new GridLayout(0, 1, 5, 5)); // Dynamic rows, single column
-        if (this.combinedApp.getLoggedInUser() != null) {
-            List<Country> favCountries = this.combinedApp.getLoggedInUser().getFavouriteCountries();
+        if (this.combinedApp.getLoginManager().getLoggedInUser() != null) {
+            Collection<Country> favCountries = this.combinedApp.getLoginManager().getLoggedInUser().getFavouriteCountries();
             if (favCountries != null) {
                 for (Country country : favCountries) {
                     JButton countryButton = new JButton(country.getName());

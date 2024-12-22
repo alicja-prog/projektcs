@@ -9,9 +9,6 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 import javax.swing.DefaultListModel;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
 
 
 public class CountryListApp {
@@ -155,8 +152,9 @@ public class CountryListApp {
         return panel;
     }
 
-    private void showCountryInfo(String country) {
-        String currencyCode = getCurrencyCode(country);
+    private void showCountryInfo(String countryName) {
+        String currencyCode = getCurrencyCode(countryName);
+        Country country = new Country(countryName, currencyCode);
         Double exchangeRate = this.currencyConverterApp.getCurrencyRates().get(currencyCode);
 
         String exchangeRateInfo = (exchangeRate != null)
@@ -170,48 +168,45 @@ public class CountryListApp {
         dialog.setModal(true);
 
         JPanel panel = new JPanel(new BorderLayout());
-        JLabel messageLabel = new JLabel("<html>You selected: " + country + "<br>" + exchangeRateInfo + "</html>", SwingConstants.CENTER);
+        JLabel messageLabel = new JLabel("<html>You selected: " + countryName + "<br>" + exchangeRateInfo + "</html>", SwingConstants.CENTER);
         panel.add(messageLabel, BorderLayout.CENTER);
 
-        // Create heart button
-        JButton heartButton = new JButton();
-        heartButton.setPreferredSize(new Dimension(50, 50));
-        heartButton.setOpaque(true);
-        heartButton.setContentAreaFilled(true);
 
-        User currentUser = combinedApp.getLoggedInUser();
-        boolean isFavorited = (currentUser != null && currentUser.isFavoriteCountry(country));
-        updateHeartIcon(heartButton, isFavorited);
 
-        // Add action listener to toggle heart state
-        heartButton.addActionListener(new ActionListener() {
+        User currentUser = combinedApp.getLoginManager().getLoggedInUser();
+        if (currentUser !=null) {
+            // Create heart button
+            JButton heartButton = new JButton();
+            heartButton.setPreferredSize(new Dimension(50, 50));
+            heartButton.setOpaque(true);
+            heartButton.setContentAreaFilled(true);
+            // TODO Heart is not visible at the start of app (even though its liked)
+            updateHeartIcon(heartButton,currentUser.isFavoriteCountry(country));
+            // Add action listener to toggle heart state
+            heartButton.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (currentUser != null) {
-                    isFavorited = !isFavorited;
-                    updateHeartIcon(heartButton, isFavorited);
-                    if (isFavorited) {
-                        currentUser.addFavouriteCountry(new Country(country, currencyCode));
-                        System.out.println("Added to favorites: " + country);
-                    } else {
-                        currentUser.removeFavouriteCountry(country);
-                        System.out.println("Removed from favorites: " + country);
-                    }
-                    combinedApp.saveAccountToFile(currentUser.getUsername(), currentUser.getPassword());
-                } else {
-                    JOptionPane.showMessageDialog(dialog, "You must be logged in to favorite a country.");
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                        if (currentUser.isFavoriteCountry(country)) {
+                            currentUser.removeFavouriteCountry(country);
+                        }else {
+                            currentUser.addFavouriteCountry(country);
+                        }
+                    boolean favoriteCountry = currentUser.isFavoriteCountry(country);
+                    updateHeartIcon(heartButton, currentUser.isFavoriteCountry(country));
+                        combinedApp.getLoginManager().saveAccountsToFile();
                 }
-            }
-        });
+            });
 
-        // Add heart button below exchange rate info
-        JPanel heartPanel = new JPanel();
-        // Center-align the button
-        heartPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        heartPanel.add(heartButton);
+            // Add heart button below exchange rate info
+            JPanel heartPanel = new JPanel();
+            // Center-align the button
+            heartPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+            heartPanel.add(heartButton);
 
-        panel.add(heartPanel, BorderLayout.NORTH);
+            panel.add(heartPanel, BorderLayout.NORTH);
+        }
+
 
         JButton calculatorButton = new JButton("Open Currency Calculator");
         calculatorButton.addActionListener(e -> {
