@@ -180,19 +180,18 @@ public class CountryListApp {
         heartButton.setContentAreaFilled(true);
 
         User currentUser = combinedApp.getLoggedInUser();
-        boolean isFavorited = currentUser != null && currentUser.isFavoriteCountry(country);
+        boolean isFavorited = (currentUser != null && currentUser.isFavoriteCountry(country));
         updateHeartIcon(heartButton, isFavorited);
 
         // Add action listener to toggle heart state
         heartButton.addActionListener(new ActionListener() {
-            private boolean favoriteState = isFavorited;
 
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (currentUser != null) {
-                    favoriteState = !favoriteState;
-                    updateHeartIcon(heartButton, favoriteState);
-                    if (favoriteState) {
+                    isFavorited = !isFavorited;
+                    updateHeartIcon(heartButton, isFavorited);
+                    if (isFavorited) {
                         currentUser.addFavouriteCountry(new Country(country, currencyCode));
                         System.out.println("Added to favorites: " + country);
                     } else {

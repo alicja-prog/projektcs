@@ -1,7 +1,17 @@
 package com.example.internal;
 
+import javax.swing.*;
+
 public class Main {
     public static void main(String[] args) {
-        CombinedApp app = new CombinedApp();
+       SwingUtilities.invokeLater(new Runnable() {
+           @Override
+           public void run() {
+               CombinedApp app = new CombinedApp();
+           }
+       })
+       ;
+
     }
+
 }
