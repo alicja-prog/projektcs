@@ -13,7 +13,8 @@ import javax.swing.border.EmptyBorder;
 import javax.imageio.ImageIO;
 
 public class WorldMapApp {
-
+    private App app;
+    private JPanel worldMapAppPanel;
     private JComponent ui = null;
     JLabel output = new JLabel();
     JLabel infoLabel = new JLabel("Hover over a country");
@@ -24,6 +25,8 @@ public class WorldMapApp {
     ArrayList<Shape> shapeList;
     Map<Shape, String[]> countryInfoMap;
 
+
+
     public WorldMapApp() {
         try {
             initUI();
@@ -31,7 +34,14 @@ public class WorldMapApp {
             ex.printStackTrace();
         }
     }
-
+    /*public WorldMapApp(App app) { // Constructor accepting App instance
+        this.app = app;
+        try {
+            initUI();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        }*/
     public void saveCountryInfoMap(String filename) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
             // Convert the map to a serializable format
@@ -73,9 +83,9 @@ public class WorldMapApp {
         countryInfoMap = assignCountryInfo(shapeList);
     }
 
-    public final void initUI() throws Exception {
+    public JPanel initUI() throws Exception {
         if (ui != null) {
-            return;
+
         }//https://tse2.mm.bing.net/th?id=OIP.GCR7D-XhkHLwqxaOJHtV6gHaFv&pid=Api
         image = ImageIO.read(new File("map.jpg"));
         image = resizeImage(image, WIDTH, HEIGHT); // Resize image to fit within SIZE
@@ -93,6 +103,11 @@ public class WorldMapApp {
         ui.add(infoLabel, BorderLayout.NORTH);
         ui.add(output, BorderLayout.CENTER);
         refresh();
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> app.switchPanel("MainAppPanel"));
+        ui.add(backButton, BorderLayout.SOUTH);
+        return (JPanel) ui; //?????
+
     }
 
     public Area getOutline(Color target, BufferedImage bi, int tolerance) {

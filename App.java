@@ -16,25 +16,29 @@ public class App {
 
     private CountryListApp countryListApp;
     private JFrame mainFrame;
+    private WorldMapApp worldMapApp;
     private LoginManager loginManager;
+
 
     public App() {
         loginManager = new LoginManager();
         currencyConverterApp= new CurrencyConverterApp(this);
         countryListApp = new CountryListApp(this,currencyConverterApp);
+        worldMapApp = new WorldMapApp();
 
         mainFrame =  new JFrame("Combined Application");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setSize(600, 400);
+        mainFrame.setSize(750, 550);
         mainFrame.setLocationRelativeTo(null);
         mainPanel.add(createMainAppPanel(), "MainAppPanel");
         mainPanel.add(countryListApp.getPanel(), "CountryListPanel");
         mainPanel.add(currencyConverterApp.getPanel(), "CurrencyConverterPanel");
-
+        mainPanel.add(worldMapApp.getUI(), "WorldMapAppPanel");
         mainPanel.add(createInitialPanel(), "InitialPanel");
         mainPanel.add(createLoginPanel(), "LoginPanel");
         mainPanel.add(createRegisterPanel(), "RegisterPanel");
         mainPanel.add(createMainAppPanel(), "MainAppPanel");
+
 //            mainPanel.add(createCurrencyConverterPanel(), "CurrencyConverterPanel");
 //            mainPanel.add(createCountryListPanel(), "CountryListPanel");
 
@@ -67,6 +71,7 @@ public class App {
 
         loginButton.addActionListener(e -> switchPanel("LoginPanel"));
         registerButton.addActionListener(e -> switchPanel("RegisterPanel"));
+
 
         buttonPanel.add(loginButton);
         buttonPanel.add(registerButton);
@@ -200,7 +205,7 @@ public class App {
 
         return panel;
     }
-    private  JPanel createMainAppPanel() {
+    private JPanel createMainAppPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel label = new JLabel("Main Application", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
@@ -208,12 +213,15 @@ public class App {
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton countryListButton = new JButton("Show Country List");
+        JButton worldMapButton = new JButton("Open world map");
         JButton currencyConverterButton = new JButton("Currency Converter");
 
         countryListButton.addActionListener(e -> switchPanel("CountryListPanel"));
+        worldMapButton.addActionListener(e -> switchPanel("WorldMapAppPanel"));
         currencyConverterButton.addActionListener(e -> switchPanel("CurrencyConverterPanel"));
 
         buttonPanel.add(countryListButton);
+        buttonPanel.add(worldMapButton);
         buttonPanel.add(currencyConverterButton);
         panel.add(buttonPanel, BorderLayout.CENTER);
 
