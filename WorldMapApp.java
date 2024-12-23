@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 public class WorldMapApp {
     private App app;
     private JPanel worldMapAppPanel;
-    private JComponent ui = null;
+    private JPanel ui = null;
     JLabel output = new JLabel();
     JLabel infoLabel = new JLabel("Hover over a country");
     public static final int WIDTH = 700; // Reduced size to fit the window
@@ -27,8 +27,9 @@ public class WorldMapApp {
 
 
 
-    public WorldMapApp() {
+    public WorldMapApp(App app) {
         try {
+            this.app=app;
             initUI();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -106,7 +107,7 @@ public class WorldMapApp {
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> app.switchPanel("MainAppPanel"));
         ui.add(backButton, BorderLayout.SOUTH);
-        return (JPanel) ui; //?????
+        return ui;  //?????
 
     }
 
@@ -292,7 +293,7 @@ public class WorldMapApp {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            WorldMapApp o = new WorldMapApp();
+            WorldMapApp o = new WorldMapApp(new App());
 
             JFrame f = new JFrame(o.getClass().getSimpleName());
             f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

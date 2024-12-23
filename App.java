@@ -24,7 +24,7 @@ public class App {
         loginManager = new LoginManager();
         currencyConverterApp= new CurrencyConverterApp(this);
         countryListApp = new CountryListApp(this,currencyConverterApp);
-        worldMapApp = new WorldMapApp();
+        worldMapApp = new WorldMapApp(this);
 
         mainFrame =  new JFrame("Combined Application");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
