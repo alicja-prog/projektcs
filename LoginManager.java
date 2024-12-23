@@ -54,7 +54,7 @@ public class LoginManager {
                     favorites.append(country.getName()).append(":").append(country.getCurrency());
                 }
                 String line = user.getUsername() + "," + user.getPassword() + "," + favorites.toString();
-                writer.write(line);
+                writer.write(CaesarCipher.encrypt(line));
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -66,6 +66,7 @@ public class LoginManager {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = reader.readLine()) != null) {
+                line = CaesarCipher.decrypt(line);
                 System.out.println("Reading line: " + line); // Debugging
                 String[] data = line.split(",");
                 if (data.length >= 2) { // Ensure we have both username and password
@@ -87,7 +88,6 @@ public class LoginManager {
                     for (int i = 0; i < favoriteCountries.size(); i++) {
                         user.addFavouriteCountry(favoriteCountries.get(i));
                     }
-//                    user.setFavouriteCountries(favoriteCountries);
                     users.put(username, user);
                 }
             }

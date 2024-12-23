@@ -8,7 +8,7 @@ public class Country {
     
 
 
-    public Country(String currency, String name) {
+    public Country(String name,String currency) {
         this.currency = currency;
         this.name = name;
     }

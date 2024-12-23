@@ -8,10 +8,10 @@ public class Main {
            @Override
            public void run() {
                CombinedApp app = new CombinedApp();
+
            }
        })
        ;
-
     }
 
 }
