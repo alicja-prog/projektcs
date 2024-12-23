@@ -81,7 +81,7 @@ public class WorldMapApp {
         image = resizeImage(image, WIDTH, HEIGHT); // Resize image to fit within SIZE
         area = getOutline(Color.WHITE, image, 12);
         findContinents();
-        saveCountryInfoMap("countryInfoMap");
+//       saveCountryInfoMap("countryInfoMap");
 //        loadCountryInfoMap("countryInfoMap");
 
         ui = new JPanel(new BorderLayout(4, 4));
