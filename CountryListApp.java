@@ -35,13 +35,13 @@ public class CountryListApp {
     private JPanel createCountryListPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         // Create the country list model and JList
-        DefaultListModel<String> countryListModel = new DefaultListModel<>();
+        DefaultListModel<Country> countryListModel = new DefaultListModel<>();
 
         for (Country country : Country.ALL_COUNTRIES) {
-            countryListModel.addElement(country.getName());
+            countryListModel.addElement(country);
         }
-        JList<String> countryList = new JList<>(countryListModel);
-        countryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JList<Country> countryList = new JList<>(countryListModel);
+        countryList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane listScrollPane = new JScrollPane(countryList);
 
         // Add action listener for selection
@@ -49,8 +49,8 @@ public class CountryListApp {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
-                    String selectedCountry = countryList.getSelectedValue();
-                    if (!selectedCountry.equals("No matches found")) {
+                    Country selectedCountry = countryList.getSelectedValue();
+                    if (selectedCountry != null) {
                         showCountryInfo(selectedCountry); // Call method to show info
 
 
@@ -113,6 +113,10 @@ public class CountryListApp {
             // Filter the country list based on the search bar input
             private void filterList() {
                 String filterText = searchField.getText().toLowerCase();
+                if (filterText.equals("search")) {
+                    countryListModel.addAll(Country.ALL_COUNTRIES);
+                    return;
+                }
                 System.out.println("Filtering for: " + filterText); // Debug log
                 countryListModel.clear();
 
@@ -123,14 +127,14 @@ public class CountryListApp {
 
                     // Match the beginning of the name, whole name, or first letter
                     if (lowerCaseCountry.startsWith(filterText)) {
-                        countryListModel.addElement(country.getName());
+                        countryListModel.addElement(country);
                         System.out.println("Matched: " + country); // Debugging
                     }
                 }
 
                 // If no match is found, add a message to the list
                 if (countryListModel.isEmpty()) {
-                    countryListModel.addElement("No matches found");
+//                    countryListModel.addElement("No matches found"); TODO
                     System.out.println("No matches found."); // Debugging
                 }
             }
@@ -146,8 +150,8 @@ public class CountryListApp {
         return panel;
     }
 
-    private void showCountryInfo(String countryName) {
-        Country country = Country.ALL_COUNTRIES.stream().filter((c) -> c.getName().equals(countryName)).findFirst().get();
+    private void showCountryInfo(Country countryName) {
+        Country country = Country.ALL_COUNTRIES.stream().filter((c) -> c.equals(countryName)).findFirst().get();
         String currencyCode = country.getCurrency().getCode();
         Double exchangeRate = this.currencyConverterApp.getCurrencyRates().get(currencyCode);
 

@@ -40,7 +40,13 @@ public class Currency {
                 .reduce((a, b) -> a + ", " + b) // Combine names into a single string
                 .orElse("No countries"); // Default if no countries are associated
 
-        return code + " (" + name + ") - Used in: [" + countriesList + "]";
+        if (code=="EUR") {
+            return "Euro";
+        }else if (code=="USD") {
+            return "US Dollar";
+        }else {
+            return code + " (" + name + ") - Used in: [" + countriesList + "]";
+        }
     }
 
     public static Currency findCurrencyByCode(String code) {

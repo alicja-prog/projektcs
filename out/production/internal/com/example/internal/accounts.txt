@@ -1,5 +1,5 @@
 dolfmd,dolfmd,
 zp,zp,
-dod,dod,4|7|1
+dod,dod,4|2|7|1
 pz,pz,
 Ljru3!,srovnd07,

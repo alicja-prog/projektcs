@@ -39,11 +39,7 @@ public class Country {
 
     @Override
     public String toString() {
-        return "Country{" +
-                "name='" + name + '\'' +
-                ", currency='" + currency + '\'' +
-                ", continent=" + continent +
-                '}';
+        return name;
     }
 
     public String getName() {
