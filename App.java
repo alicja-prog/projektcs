@@ -3,15 +3,9 @@ package com.example.internal;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.HierarchyEvent;
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
 
 
-
-public class CombinedApp {
+public class App {
 
 
     private  CardLayout cardLayout = new CardLayout();
@@ -24,10 +18,11 @@ public class CombinedApp {
     private JFrame mainFrame;
     private LoginManager loginManager;
 
-    public CombinedApp() {
+    public App() {
         loginManager = new LoginManager();
         currencyConverterApp= new CurrencyConverterApp(this);
         countryListApp = new CountryListApp(this,currencyConverterApp);
+
         mainFrame =  new JFrame("Combined Application");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(600, 400);

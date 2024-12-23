@@ -5,7 +5,6 @@ import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,49 +12,77 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.imageio.ImageIO;
 
-public class WorldMapArea {
+public class WorldMapApp {
 
-    private static final String DATA_FILE = "countryInfoMap.ser";
     private JComponent ui = null;
     JLabel output = new JLabel();
     JLabel infoLabel = new JLabel("Hover over a country");
-    public static final int SIZE = 500; // Reduced size to fit the window
+    public static final int WIDTH = 700; // Reduced size to fit the window
+    public static final int HEIGHT = 500; // Reduced size to fit the window
     BufferedImage image;
     Area area;
     ArrayList<Shape> shapeList;
     Map<Shape, String[]> countryInfoMap;
 
-    public WorldMapArea() {
+    public WorldMapApp() {
         try {
-            loadCountryInfoMap(); // Load existing data if available
             initUI();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    // Add save call when exiting or updating
-    public void saveOnExit() {
-        saveCountryInfoMap();
+    public void saveCountryInfoMap(String filename) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
+            // Convert the map to a serializable format
+            Map<Shape, String[]> serializableMap = new HashMap<>();
+            for (Map.Entry<Shape, String[]> entry : countryInfoMap.entrySet()) {
+                Rectangle bounds = entry.getKey().getBounds(); // Use bounding box as a proxy for Shape
+                serializableMap.put(bounds, entry.getValue());
+            }
+            oos.writeObject(serializableMap);
+            System.out.println("countryInfoMap serialized successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @SuppressWarnings("unchecked")
+    public void loadCountryInfoMap(String filename) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
+            Map<Shape, String[]> serializableMap = (Map<Shape, String[]>) ois.readObject();
+            countryInfoMap = new HashMap<>();
+            for (Map.Entry<Shape, String[]> entry : serializableMap.entrySet()) {
+                // Convert the Rectangle back into an Area or Shape (if applicable)
+                countryInfoMap.put(entry.getKey(), entry.getValue());
+            }
+            shapeList =  new ArrayList<>();
+            shapeList.addAll(countryInfoMap.keySet());
+            System.out.println("countryInfoMap deserialized successfully.");
+        } catch (FileNotFoundException e) {
+            System.out.println("Data file not found. Initializing a new countryInfoMap.");
+            countryInfoMap = new HashMap<>();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void findContinents() {
+        shapeList = separateShapeIntoRegions(area);
+        filterOceans(); // Filter out ocean shapes
+        calibrateShapes();
+        countryInfoMap = assignCountryInfo(shapeList);
     }
 
     public final void initUI() throws Exception {
         if (ui != null) {
             return;
         }//https://tse2.mm.bing.net/th?id=OIP.GCR7D-XhkHLwqxaOJHtV6gHaFv&pid=Api
-        URL url = new URL("https://tse2.mm.bing.net/th?id=OIP.GCR7D-XhkHLwqxaOJHtV6gHaFv&pid=Api");
-        image = ImageIO.read(url);
-        image = resizeImage(image, SIZE, SIZE); // Resize image to fit within SIZE
-        long then = System.currentTimeMillis();
-        System.out.println("" + then);
+        image = ImageIO.read(new File("map.jpg"));
+        image = resizeImage(image, WIDTH, HEIGHT); // Resize image to fit within SIZE
         area = getOutline(Color.WHITE, image, 12);
-        long now = System.currentTimeMillis();
-        System.out.println("Time in mins: " + (now - then) / 60000d);
-        shapeList = separateShapeIntoRegions(area);
-        filterOceans(); // Filter out ocean shapes
-        calibrateShapes();
-
-        countryInfoMap = assignCountryInfo(shapeList);
+        findContinents();
+        saveCountryInfoMap("countryInfoMap");
+//        loadCountryInfoMap("countryInfoMap");
 
         ui = new JPanel(new BorderLayout(4, 4));
         ui.setBorder(new EmptyBorder(4, 4, 4, 4));
@@ -137,7 +164,7 @@ public class WorldMapArea {
             Rectangle bounds = shape.getBounds();
             double area = bounds.getWidth() * bounds.getHeight();
             // Exclude shapes that are disproportionately large (likely oceans)
-            return area > (SIZE * SIZE * 0.1); // Adjust the threshold as needed
+            return area > (WIDTH * HEIGHT * 0.1); // Adjust the threshold as needed
         });
     }
 
@@ -210,10 +237,10 @@ public class WorldMapArea {
 
     private BufferedImage getImage() {
         BufferedImage bi = new BufferedImage(
-                SIZE, SIZE, BufferedImage.TYPE_INT_RGB);
+                WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 
         Graphics2D g = bi.createGraphics();
-        g.drawImage(image, 0, 0, SIZE, SIZE, null);
+        g.drawImage(image, 0, 0, WIDTH, HEIGHT, null);
         g.setColor(Color.ORANGE.darker());
         g.fill(area);
         g.setColor(Color.RED);
@@ -250,7 +277,7 @@ public class WorldMapArea {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            WorldMapArea o = new WorldMapArea();
+            WorldMapApp o = new WorldMapApp();
 
             JFrame f = new JFrame(o.getClass().getSimpleName());
             f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -263,7 +290,7 @@ public class WorldMapArea {
             f.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
-                    o.saveOnExit(); // Save data when the window closes
+                    //o.saveOnExit(); // Save data when the window closes
                     super.windowClosing(e);
                 }
             });
@@ -273,29 +300,6 @@ public class WorldMapArea {
         SwingUtilities.invokeLater(r);
     }
 
-    // Serialization method
-    public void saveCountryInfoMap() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            oos.writeObject(countryInfoMap);
-            System.out.println("countryInfoMap serialized successfully.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    // Deserialization method
-    @SuppressWarnings("unchecked")
-    public Map<Shape, String[]> loadCountryInfoMap() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            countryInfoMap = (Map<Shape, String[]>) ois.readObject();
-            System.out.println("countryInfoMap deserialized successfully.");
-        } catch (FileNotFoundException e) {
-            System.out.println("Data file not found. Initializing a new countryInfoMap.");
-            countryInfoMap = new HashMap<>();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return countryInfoMap;
-    }
 
 }

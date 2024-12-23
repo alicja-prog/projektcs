@@ -8,22 +8,20 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.List;
 
 public class CurrencyConverterApp {
 
     // Sample country data - in a real application, this could be loaded from a database or an API
-    private CombinedApp combinedApp;
+    private App app;
     private JPanel currencyConverterPanel; // Attribute for the panel
     private String wantCurrencyCode = "EUR"; // Default value
     private Map<String, Double> currencyRates;
     private String haveCurrencyCode = "PLN";
     private double amount = 100;
 
-    public CurrencyConverterApp(CombinedApp combinedApp) {
-        this.combinedApp = combinedApp;
+    public CurrencyConverterApp(App app) {
+        this.app = app;
         this.currencyRates = loadCurrencyRates();
-        System.out.println(currencyRates.keySet());
         this.currencyConverterPanel = createCurrencyConverterPanel();
     }
 
@@ -134,8 +132,8 @@ public class CurrencyConverterApp {
         panel.add(centerPanel, BorderLayout.CENTER);
         // WEST region: Optional country buttons (if needed)
         JPanel westPanel = new JPanel(new GridLayout(0, 1, 5, 5)); // Dynamic rows, single column
-        if (this.combinedApp.getLoginManager().getLoggedInUser() != null) {
-            Collection<Country> favCountries = this.combinedApp.getLoginManager().getLoggedInUser().getFavouriteCountries();
+        if (this.app.getLoginManager().getLoggedInUser() != null) {
+            Collection<Country> favCountries = this.app.getLoginManager().getLoggedInUser().getFavouriteCountries();
             if (favCountries != null) {
                 for (Country country : favCountries) {
                     JButton countryButton = new JButton(country.getName());
@@ -147,7 +145,7 @@ public class CurrencyConverterApp {
         panel.add(westPanel, BorderLayout.WEST);
 
         JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> combinedApp.switchPanel("MainAppPanel"));
+        backButton.addActionListener(e -> app.switchPanel("MainAppPanel"));
         panel.add(backButton, BorderLayout.SOUTH);
 
         return panel;

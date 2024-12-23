@@ -6,25 +6,23 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
-import java.util.List;
 import javax.swing.DefaultListModel;
 
 
 public class CountryListApp {
 
 
-    private final CombinedApp combinedApp;
+    private final App app;
     private JPanel countryListPanel;
     private CurrencyConverterApp currencyConverterApp;
 
 
 
 
-    public CountryListApp(CombinedApp combinedApp, CurrencyConverterApp currencyConverterApp) {
+    public CountryListApp(App app, CurrencyConverterApp currencyConverterApp) {
         this.currencyConverterApp = currencyConverterApp;
         this.countryListPanel = createCountryListPanel();
-        this.combinedApp = combinedApp;
+        this.app = app;
     }
 
     // Getter for the panel
@@ -145,7 +143,7 @@ public class CountryListApp {
         panel.add(listScrollPane, BorderLayout.CENTER); // Add the list in the center
 
         JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> combinedApp.switchPanel("MainAppPanel"));
+        backButton.addActionListener(e -> app.switchPanel("MainAppPanel"));
         panel.add(backButton, BorderLayout.SOUTH);
         return panel;
     }
@@ -171,7 +169,7 @@ public class CountryListApp {
 
 
 
-        User currentUser = combinedApp.getLoginManager().getLoggedInUser();
+        User currentUser = app.getLoginManager().getLoggedInUser();
         if (currentUser !=null) {
             // Create heart button
             JButton heartButton = new JButton();
@@ -191,7 +189,7 @@ public class CountryListApp {
                         }
                     boolean favoriteCountry = currentUser.isFavoriteCountry(country);
                     updateHeartIcon(heartButton, currentUser.isFavoriteCountry(country));
-                        combinedApp.getLoginManager().saveAccountsToFile();
+                        app.getLoginManager().saveAccountsToFile();
                 }
             });
 
@@ -208,7 +206,7 @@ public class CountryListApp {
         JButton calculatorButton = new JButton("Open Currency Calculator");
         calculatorButton.addActionListener(e -> {
             currencyConverterApp.setWantCurrencyCode(currencyCode);
-            combinedApp.switchPanel("CurrencyConverterPanel");
+            app.switchPanel("CurrencyConverterPanel");
             dialog.dispose();
         });
 
