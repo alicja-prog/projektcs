@@ -23,6 +23,7 @@ public class CurrencyConverterApp {
     public CurrencyConverterApp(CombinedApp combinedApp) {
         this.combinedApp = combinedApp;
         this.currencyRates = loadCurrencyRates();
+        System.out.println(currencyRates.keySet());
         this.currencyConverterPanel = createCurrencyConverterPanel();
     }
 
@@ -44,7 +45,6 @@ public class CurrencyConverterApp {
     }
 
     private JPanel createCurrencyConverterPanel() {
-        // Use BorderLayout for the main panel
         JPanel panel = new JPanel(new BorderLayout(10, 10)); // 10px gaps between components
 
         // NORTH region: Title label
@@ -57,18 +57,18 @@ public class CurrencyConverterApp {
         gbc.insets = new Insets(10, 10, 10, 10); // Margins around components
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-// Amount label and field
+        // Amount label and field
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.weightx = 0.3; // Give some space for the label
+        gbc.weightx = 0.3;
         centerPanel.add(new JLabel("Amount:"), gbc);
 
         gbc.gridx = 1;
-        gbc.weightx = 0.7; // Stretch the field to fill the remaining space
+        gbc.weightx = 0.7;
         JTextField amountField = new JTextField(String.valueOf(amount));
         centerPanel.add(amountField, gbc);
 
-// "I have" label and dropdown
+        // "I have" label and dropdown
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.weightx = 0.3;
@@ -76,11 +76,14 @@ public class CurrencyConverterApp {
 
         gbc.gridx = 1;
         gbc.weightx = 0.7;
-        JComboBox<String> haveCurrency = new JComboBox<>(createLabelArray());
-        haveCurrency.setSelectedItem(haveCurrencyCode);
-        centerPanel.add(haveCurrency, gbc);
+        JComboBox<Currency> haveCurrencyBox = new JComboBox<>(Currency.ALL_CURRENCIES.toArray(new Currency[0]));
+        haveCurrencyBox.setSelectedItem(Currency.ALL_CURRENCIES.stream()
+                .filter(c -> c.getCode().equals(haveCurrencyCode))
+                .findFirst()
+                .orElse(null));
+        centerPanel.add(haveCurrencyBox, gbc);
 
-// "I want" label and dropdown
+        // "I want" label and dropdown
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.weightx = 0.3;
@@ -88,11 +91,14 @@ public class CurrencyConverterApp {
 
         gbc.gridx = 1;
         gbc.weightx = 0.7;
-        JComboBox<String> wantCurrency = new JComboBox<>(createLabelArray());
-        wantCurrency.setSelectedItem(wantCurrencyCode);
-        centerPanel.add(wantCurrency, gbc);
+        JComboBox<Currency> wantCurrencyBox = new JComboBox<>(Currency.ALL_CURRENCIES.toArray(new Currency[0]));
+        wantCurrencyBox.setSelectedItem(Currency.ALL_CURRENCIES.stream()
+                .filter(c -> c.getCode().equals(wantCurrencyCode))
+                .findFirst()
+                .orElse(null));
+        centerPanel.add(wantCurrencyBox, gbc);
 
-// Result label
+        // Result label
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.weightx = 0.3;
@@ -100,33 +106,32 @@ public class CurrencyConverterApp {
 
         gbc.gridx = 1;
         gbc.weightx = 0.7;
-        String resultLabelString = "Click 'Convert' button to calculate";
-        JLabel resultLabel = new JLabel(resultLabelString);
+        JLabel resultLabel = new JLabel("Click 'Convert' button to calculate");
         centerPanel.add(resultLabel, gbc);
 
-// Convert button
+        // Convert button
         gbc.gridx = 0;
         gbc.gridy = 4;
-        gbc.gridwidth = 2; // Span both columns
-        gbc.weightx = 1.0; // Center the button
-        gbc.anchor = GridBagConstraints.CENTER; // Center alignment
+        gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.CENTER;
         JButton convertButton = new JButton("Convert");
         centerPanel.add(convertButton, gbc);
 
-// Action Listeners
+        // Action Listener for the Convert button
         convertButton.addActionListener(e -> {
             try {
                 double amount = Double.parseDouble(amountField.getText());
-                String fromCurrency = (String) haveCurrency.getSelectedItem();
-                String toCurrency = (String) wantCurrency.getSelectedItem();
-                double result = calculateExchangeResult(amount, fromCurrency,toCurrency);
-                resultLabel.setText(String.format("%.2f %s = %.2f %s", amount, fromCurrency, result, toCurrency));
+                Currency haveCurrency = (Currency) haveCurrencyBox.getSelectedItem();
+                Currency wantCurrency = (Currency) wantCurrencyBox.getSelectedItem();
+                double result = calculateExchangeResult(amount, haveCurrency.getCode(), wantCurrency.getCode());
+                resultLabel.setText(String.format("%.2f %s = %.2f %s", amount, haveCurrency.getCode(), result, wantCurrency.getCode()));
             } catch (NumberFormatException ex) {
                 resultLabel.setText("Invalid amount entered!");
             }
         });
-        panel.add(centerPanel, BorderLayout.CENTER);
 
+        panel.add(centerPanel, BorderLayout.CENTER);
         // WEST region: Optional country buttons (if needed)
         JPanel westPanel = new JPanel(new GridLayout(0, 1, 5, 5)); // Dynamic rows, single column
         if (this.combinedApp.getLoginManager().getLoggedInUser() != null) {
@@ -144,24 +149,16 @@ public class CurrencyConverterApp {
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> combinedApp.switchPanel("MainAppPanel"));
         panel.add(backButton, BorderLayout.SOUTH);
+
         return panel;
     }
+
 
 
     private double calculateExchangeResult(double amount, String fromCurrency, String toCurrency) {
         double exchangeRate = this.currencyRates.get(toCurrency) / this.currencyRates.get(fromCurrency);
         return amount / exchangeRate;
     }
-
-    private String[] createLabelArray() {
-        String[] array = this.currencyRates.keySet().toArray(new String[0]);
-//        for (int i = 0; i < array.length; i++) {
-//            array[i] = array[i];
-//        } TODO
-        return array;
-    }
-
-
     private static void showCountryInfo(Country country) {
         // Show country info and currency rate calculator for the respective currency
         JOptionPane.showMessageDialog(null,

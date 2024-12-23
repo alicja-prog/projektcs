@@ -17,6 +17,9 @@ public class CombinedApp {
     private  CardLayout cardLayout = new CardLayout();
     private  JPanel mainPanel = new JPanel(cardLayout);
     private CurrencyConverterApp currencyConverterApp;
+
+
+
     private CountryListApp countryListApp;
     private JFrame mainFrame;
     private LoginManager loginManager;
@@ -224,6 +227,9 @@ public class CombinedApp {
 
     public LoginManager getLoginManager() {
         return loginManager;
+    }
+    public CountryListApp getCountryListApp() {
+        return countryListApp;
     }
 }
 

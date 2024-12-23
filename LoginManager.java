@@ -48,13 +48,16 @@ public class LoginManager {
             for (User user : users.values()) {
                 StringBuilder favorites = new StringBuilder();
                 for (Country country : user.getFavouriteCountries()) {
-                    if (!favorites.isEmpty()) {
+                    if (favorites.length() > 0) {
                         favorites.append("|");
                     }
-                    favorites.append(country.getName()).append(":").append(country.getCurrency());
+                    int index = Country.ALL_COUNTRIES.indexOf(country);
+                    if (index != -1) { // Ensure the country is in the list
+                        favorites.append(index);
+                    }
                 }
                 String line = user.getUsername() + "," + user.getPassword() + "," + favorites.toString();
-                writer.write(CaesarCipher.encrypt(line));
+                writer.write(CaesarCipher.encrypt(line)); // Encrypt the line before saving
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -62,11 +65,12 @@ public class LoginManager {
         }
     }
 
+
     private void loadAccountsFromFile() {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                line = CaesarCipher.decrypt(line);
+                line = CaesarCipher.decrypt(line); // Decrypt the line before parsing
                 System.out.println("Reading line: " + line); // Debugging
                 String[] data = line.split(",");
                 if (data.length >= 2) { // Ensure we have both username and password
@@ -75,26 +79,29 @@ public class LoginManager {
                     System.out.println("Parsed username: " + username + ", password: " + password); // Debugging
                     List<Country> favoriteCountries = new ArrayList<>();
                     if (data.length == 3 && !data[2].isEmpty()) { // Check for favorite countries
-                        String[] countries = data[2].split("\\|");
-                        for (String countryData : countries) {
-                            String[] countryInfo = countryData.split(":");
-                            if (countryInfo.length == 2) {
-                                favoriteCountries.add(new Country(countryInfo[0], countryInfo[1]));
+                        String[] indices = data[2].split("\\|");
+                        for (String indexStr : indices) {
+                            try {
+                                int index = Integer.parseInt(indexStr); // Parse the index
+                                if (index >= 0 && index < Country.ALL_COUNTRIES.size()) {
+                                    favoriteCountries.add(Country.ALL_COUNTRIES.get(index)); // Add the country
+                                }
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid index: " + indexStr); // Debugging invalid indices
                             }
                         }
                     }
 
                     User user = new User(username, password);
-                    for (int i = 0; i < favoriteCountries.size(); i++) {
-                        user.addFavouriteCountry(favoriteCountries.get(i));
-                    }
-                    users.put(username, user);
+                    user.setFavouriteCountries(favoriteCountries); // Add favorite countries
+                    users.put(username, user); // Add the user to the map
                 }
             }
         } catch (IOException e) {
             e.printStackTrace(); // Handle potential IO exceptions
         }
     }
+
 
     public User getLoggedInUser() {
         return loggedInUser;

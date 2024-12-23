@@ -47,4 +47,9 @@ public class User {
     public boolean isFavoriteCountry(Country country) {
         return favouriteCountries.contains(country);
     }
+
+    public void setFavouriteCountries(List<Country> favoriteCountries) {
+        this.favouriteCountries.clear();
+        this.favouriteCountries.addAll(favoriteCountries);
+    }
 }

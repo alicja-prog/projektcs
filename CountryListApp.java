@@ -13,19 +13,13 @@ import javax.swing.DefaultListModel;
 
 public class CountryListApp {
 
-    private static final List<String> COUNTRIES = Arrays.asList(
-            "Andorra", "Australia", "Austria", "Belarus", "Belgium", "Bulgaria", "Canada", "Chile", "China",
-            "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hong Kong", "Hungary",
-            "India", "Indonesia", "Ireland", "Israel", "Italy", "Japan", "Kosovo", "Latvia", "Lithuania", "Luxembourg",
-            "Malta", "Mexico", "Monaco", "Montenegro", "New Zealand", "Norway", "Philippines", "Poland", "Portugal",
-            "Republic of South Africa", "Romania", "Slovakia", "Slovenia", "Singapore", "Spain", "Sweden",
-            "Switzerland", "Thailand", "Turkey", "United Kingdom", "United States", "Vatican City"
-    );
+
     private final CombinedApp combinedApp;
-
-
     private JPanel countryListPanel;
     private CurrencyConverterApp currencyConverterApp;
+
+
+
 
     public CountryListApp(CombinedApp combinedApp, CurrencyConverterApp currencyConverterApp) {
         this.currencyConverterApp = currencyConverterApp;
@@ -43,8 +37,8 @@ public class CountryListApp {
         // Create the country list model and JList
         DefaultListModel<String> countryListModel = new DefaultListModel<>();
 
-        for (String country : COUNTRIES) {
-            countryListModel.addElement(country);
+        for (Country country : Country.ALL_COUNTRIES) {
+            countryListModel.addElement(country.getName());
         }
         JList<String> countryList = new JList<>(countryListModel);
         countryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -124,12 +118,12 @@ public class CountryListApp {
 
                 System.out.println("Filtering for: " + filterText); // Debugging
 
-                for (String country : COUNTRIES) {
-                    String lowerCaseCountry = country.toLowerCase();
+                for (Country country : Country.ALL_COUNTRIES) {
+                    String lowerCaseCountry = country.getName().toLowerCase();
 
                     // Match the beginning of the name, whole name, or first letter
                     if (lowerCaseCountry.startsWith(filterText)) {
-                        countryListModel.addElement(country);
+                        countryListModel.addElement(country.getName());
                         System.out.println("Matched: " + country); // Debugging
                     }
                 }
@@ -153,8 +147,8 @@ public class CountryListApp {
     }
 
     private void showCountryInfo(String countryName) {
-        String currencyCode = getCurrencyCode(countryName);
-        Country country = new Country(countryName, currencyCode);
+        Country country = Country.ALL_COUNTRIES.stream().filter((c) -> c.getName().equals(countryName)).findFirst().get();
+        String currencyCode = country.getCurrency().getCode();
         Double exchangeRate = this.currencyConverterApp.getCurrencyRates().get(currencyCode);
 
         String exchangeRateInfo = (exchangeRate != null)
@@ -180,7 +174,6 @@ public class CountryListApp {
             heartButton.setPreferredSize(new Dimension(50, 50));
             heartButton.setOpaque(true);
             heartButton.setContentAreaFilled(true);
-            // TODO Heart is not visible at the start of app (even though its liked)
             updateHeartIcon(heartButton,currentUser.isFavoriteCountry(country));
             // Add action listener to toggle heart state
             heartButton.addActionListener(new ActionListener() {
@@ -252,122 +245,7 @@ public class CountryListApp {
     }
 
 
-    public static List<Country> getAllCountries(){
-        List<Country> countryList=new ArrayList<>();
-        for (int i = 0; i < COUNTRIES.size(); i++) {
-            countryList.add(new Country(COUNTRIES.get(i),getCurrencyCode(COUNTRIES.get(i))));
-        }
-        return countryList;
-    }
 
 
-
-    private static String getCurrencyCode(String country) {
-        // Mapowanie krajów na kody walut
-        switch (country) {
-            case "Andorra":
-                return "EUR";
-            case "Australia":
-                return "AUD";
-            case "Austria":
-                return "EUR";
-            case "Belarus":
-                return "BYN";
-            case "Belgium":
-                return "EUR";
-            case "Bulgaria":
-                return "BGN";
-            case "Canada":
-                return "CAD";
-            case "Chile":
-                return "CLP";
-            case "China":
-                return "CNY";
-            case "Czech Republic":
-                return "CZK";
-            case "Denmark":
-                return "DKK";
-            case "Estonia":
-                return "EUR";
-            case "Finland":
-                return "EUR";
-            case "France":
-                return "EUR";
-            case "Germany":
-                return "EUR";
-            case "Greece":
-                return "EUR";
-            case "Hong Kong":
-                return "HKD";
-            case "Hungary":
-                return "HUF";
-            case "India":
-                return "INR";
-            case "Indonesia":
-                return "IDR";
-            case "Ireland":
-                return "EUR";
-            case "Israel":
-                return "ILS";
-            case "Italy":
-                return "EUR";
-            case "Japan":
-                return "JPY";
-            case "Kosovo":
-                return "EUR";
-            case "Latvia":
-                return "EUR";
-            case "Lithuania":
-                return "EUR";
-            case "Luxembourg":
-                return "EUR";
-            case "Malta":
-                return "EUR";
-            case "Mexico":
-                return "MXN";
-            case "Monaco":
-                return "EUR";
-            case "Montenegro":
-                return "EUR";
-            case "New Zealand":
-                return "NZD";
-            case "Norway":
-                return "NOK";
-            case "Philippines":
-                return "PHP";
-            case "Poland":
-                return "PLN";
-            case "Portugal":
-                return "EUR";
-            case "Republic of South Africa":
-                return "ZAR";
-            case "Romania":
-                return "RON";
-            case "Slovakia":
-                return "EUR";
-            case "Slovenia":
-                return "EUR";
-            case "Singapore":
-                return "SGD";
-            case "Spain":
-                return "EUR";
-            case "Sweden":
-                return "SEK";
-            case "Switzerland":
-                return "CHF";
-            case "Thailand":
-                return "THB";
-            case "Turkey":
-                return "TRY";
-            case "United Kingdom":
-                return "GBP";
-            case "United States":
-                return "USD";
-            case "Vatican City":
-                return "EUR";
-            default:
-                return null; // Jeśli kraj nie został znaleziony
-        }
-    }
 }
 
