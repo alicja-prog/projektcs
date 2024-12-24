@@ -12,10 +12,10 @@ import javax.imageio.ImageIO;
 import static com.example.internal.src.applications.ContourCalculator.processImage;
 
 public class WorldMapApp {
-    private static final int WIDTH = 700;
-    private static final int HEIGHT = 500;
+    private static final int WIDTH = 600;
+    private static final int HEIGHT = 450;
     private static final int TOLERANCE = 12;
-    private static final String IMAGE_PATH = "src/static_files/map.jpg";
+    private static final String IMAGE_PATH = "src/static_files/map3.jpg";
 
     private App app;
     private JPanel worldMapPanel = null;

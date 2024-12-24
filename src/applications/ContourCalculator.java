@@ -131,9 +131,29 @@ public class ContourCalculator {
     }
 
     public static Map<Shape, String[]> assignCountryInfo(ArrayList<Shape> shapes) {
-//        Map<Integer, String> continentMap = new HashMap<>();
-//        continentMap.put(111,"Europe");
+        Map<Integer, String> continentMap = new HashMap<>();
+        continentMap.put(22,"Europe");
+        continentMap.put(40,"Europe");
+        continentMap.put(38,"Asia");
+        continentMap.put(76,"Asia");
+        continentMap.put(64,"Asia");
+        continentMap.put(42,"Asia");
+        continentMap.put(104,"Asia");
+        continentMap.put(97,"Asia");
+        continentMap.put(106,"Australia");
+        continentMap.put(122,"Australia");
+        continentMap.put(123,"Australia");
+        continentMap.put(126,"Australia");
+        continentMap.put(121,"Africa");
+        continentMap.put(118,"Africa");
+        continentMap.put(13,"North America");
+        continentMap.put(12,"North America");
+        continentMap.put(6,"North America");
+        continentMap.put(77,"North America");
+        continentMap.put(56,"North America");
+        continentMap.put(128,"South America");
 
+        
         Map<Shape, String[]> map = new HashMap<>();
         // Example country information (this should be replaced with actual data)
         for (int i = 0; i < shapes.size(); i++) {
@@ -141,7 +161,7 @@ public class ContourCalculator {
 //            if (continentMap.containsKey(i)) {
 //                map.put(shapes.get(i), new String[]{continentMap.get(i)});
 //            }
-            map.put(shapes.get(i), new String[]{"Country " + (i + 1), "Description for Country " + (i + 1)});
+            map.put(shapes.get(i), new String[]{"Continent " + (i + 1), "Description for Continent " + (i + 1)});
         }
         return map;
     }
