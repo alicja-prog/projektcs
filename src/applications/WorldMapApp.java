@@ -16,13 +16,12 @@ public class WorldMapApp {
     private static final int HEIGHT = 450;
     private static final int TOLERANCE = 12;
     private static final String IMAGE_PATH = "src/static_files/map3.jpg";
-
     private App app;
     private JPanel worldMapPanel = null;
     private JLabel output = new JLabel();
     private JLabel infoLabel = new JLabel("Hover over a country");
     private BufferedImage mapImage;
-    private Map<Shape, String[]> countryInfoMap;
+    private Map<Shape, Integer> countryInfoMap;
 
 
 
@@ -79,9 +78,9 @@ public class WorldMapApp {
         @Override
         public void mouseMoved(MouseEvent e) {
             Point p = e.getPoint();
-            for (Map.Entry<Shape, String[]> entry : countryInfoMap.entrySet()) {
+            for (Map.Entry<Shape, Integer> entry : countryInfoMap.entrySet()) {
                 if (entry.getKey().contains(p)) {
-                    infoLabel.setText(entry.getValue()[0] + ": " + entry.getValue()[1]);
+                    infoLabel.setText(String.valueOf(entry.getValue()));
                     refresh();
                     return;
                 }
@@ -93,7 +92,7 @@ public class WorldMapApp {
         @Override
         public void mouseClicked(MouseEvent e) {
             Point p = e.getPoint();
-            for (Map.Entry<Shape, String[]> entry : countryInfoMap.entrySet()) {
+            for (Map.Entry<Shape, Integer> entry : countryInfoMap.entrySet()) {
                 if (entry.getKey().contains(p)) {
 
                     JPanel panel = new JPanel(new BorderLayout());

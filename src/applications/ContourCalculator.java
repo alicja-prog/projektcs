@@ -7,12 +7,13 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ContourCalculator {
 
-    public static Map<Shape, String[]> processImage(BufferedImage image, double width, double height, Color targetColor, int tolerance) {
+    public static Map<Shape, Integer> processImage(BufferedImage image, double width, double height, Color targetColor, int tolerance) {
         // Step 1: Get the outline of the target color in the image
         Area outline = ContourCalculator.getOutline(targetColor, image, tolerance);
 
@@ -22,11 +23,11 @@ public class ContourCalculator {
         // Step 3: Filter out large ocean regions
         ContourCalculator.filterOceans(shapeList, width, height);
 
-        // Step 4: Calibrate shapes for consistency
+        // Step 4: Calibrate shapes
         ContourCalculator.calibrateShapes(shapeList);
 
         // Step 5: Assign country information to each shape
-        Map<Shape, String[]> countryInfoMap = ContourCalculator.assignCountryInfo(shapeList);
+        Map<Shape, Integer> countryInfoMap = ContourCalculator.assignCountryInfo(shapeList);
 
         // Return both the outline and the country information
         return countryInfoMap;
@@ -130,38 +131,19 @@ public class ContourCalculator {
         }
     }
 
-    public static Map<Shape, String[]> assignCountryInfo(ArrayList<Shape> shapes) {
-        Map<Integer, String> continentMap = new HashMap<>();
-        continentMap.put(22,"Europe");
-        continentMap.put(40,"Europe");
-        continentMap.put(38,"Asia");
-        continentMap.put(76,"Asia");
-        continentMap.put(64,"Asia");
-        continentMap.put(42,"Asia");
-        continentMap.put(104,"Asia");
-        continentMap.put(97,"Asia");
-        continentMap.put(106,"Australia");
-        continentMap.put(122,"Australia");
-        continentMap.put(123,"Australia");
-        continentMap.put(126,"Australia");
-        continentMap.put(121,"Africa");
-        continentMap.put(118,"Africa");
-        continentMap.put(13,"North America");
-        continentMap.put(12,"North America");
-        continentMap.put(6,"North America");
-        continentMap.put(77,"North America");
-        continentMap.put(56,"North America");
-        continentMap.put(128,"South America");
-
-        
-        Map<Shape, String[]> map = new HashMap<>();
-        // Example country information (this should be replaced with actual data)
+    public static Map<Shape, Integer> assignCountryInfo(ArrayList<Shape> shapes) {
+        shapes.sort(new Comparator<Shape>() {
+            @Override
+            public int compare(Shape o1, Shape o2) {
+                if (o1.getBounds().getHeight()-o2.getBounds().getHeight() <0) return -1;
+                if (o1.getBounds().getHeight()-o2.getBounds().getHeight() >0) return 1;
+                return 0;
+            }
+        });
+        Map<Shape, Integer> map = new HashMap<>();
         for (int i = 0; i < shapes.size(); i++) {
 
-//            if (continentMap.containsKey(i)) {
-//                map.put(shapes.get(i), new String[]{continentMap.get(i)});
-//            }
-            map.put(shapes.get(i), new String[]{"Continent " + (i + 1), "Description for Continent " + (i + 1)});
+            map.put(shapes.get(i),i);
         }
         return map;
     }
