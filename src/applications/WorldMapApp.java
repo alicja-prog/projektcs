@@ -1,5 +1,7 @@
 package com.example.internal.src.applications;
 
+import com.example.internal.src.model.Country;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -21,7 +23,7 @@ public class WorldMapApp {
     private JLabel output = new JLabel();
     private JLabel infoLabel = new JLabel("Hover over a country");
     private BufferedImage mapImage;
-    private Map<Shape, Integer> countryInfoMap;
+    private Map<Shape, Country.Continent> countryInfoMap;
 
 
 
@@ -78,7 +80,7 @@ public class WorldMapApp {
         @Override
         public void mouseMoved(MouseEvent e) {
             Point p = e.getPoint();
-            for (Map.Entry<Shape, Integer> entry : countryInfoMap.entrySet()) {
+            for (Map.Entry<Shape, Country.Continent> entry : countryInfoMap.entrySet()) {
                 if (entry.getKey().contains(p)) {
                     infoLabel.setText(String.valueOf(entry.getValue()));
                     refresh();
@@ -91,24 +93,20 @@ public class WorldMapApp {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            Point p = e.getPoint();
-            for (Map.Entry<Shape, Integer> entry : countryInfoMap.entrySet()) {
-                if (entry.getKey().contains(p)) {
+        }
 
-                    JPanel panel = new JPanel(new BorderLayout());
-                    JLabel messageLabel = new JLabel("IoIo u clicked on sth", SwingConstants.CENTER);
-                    panel.add(messageLabel, BorderLayout.CENTER);
-                    JOptionPane.showMessageDialog(worldMapPanel, panel, "Country Clicked", JOptionPane.INFORMATION_MESSAGE);
+        @Override
+        public void mousePressed(MouseEvent e) {
+            Point p = e.getPoint();
+            for (Map.Entry<Shape, Country.Continent> entry : countryInfoMap.entrySet()) {
+                if (entry.getKey().contains(p)) {
+                    app.selectEuropeOnCountryListAppPanel();
+                    app.switchPanel("CountryListPanel");
                     return;
                 }
             }
             infoLabel.setText("Hover over a country");
             refresh();
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-            // Do nothing
         }
 
         @Override

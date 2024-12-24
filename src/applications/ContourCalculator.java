@@ -1,5 +1,7 @@
 package com.example.internal.src.applications;
 
+import com.example.internal.src.model.Country;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
@@ -13,7 +15,7 @@ import java.util.Map;
 
 public class ContourCalculator {
 
-    public static Map<Shape, Integer> processImage(BufferedImage image, double width, double height, Color targetColor, int tolerance) {
+    public static Map<Shape, Country.Continent> processImage(BufferedImage image, double width, double height, Color targetColor, int tolerance) {
         // Step 1: Get the outline of the target color in the image
         Area outline = ContourCalculator.getOutline(targetColor, image, tolerance);
 
@@ -27,13 +29,11 @@ public class ContourCalculator {
         ContourCalculator.calibrateShapes(shapeList);
 
         // Step 5: Assign country information to each shape
-        Map<Shape, Integer> countryInfoMap = ContourCalculator.assignCountryInfo(shapeList);
+        Map<Shape, Country.Continent> countryInfoMap = ContourCalculator.assignCountryInfo(shapeList);
 
         // Return both the outline and the country information
         return countryInfoMap;
     }
-
-    // Static Methods
 
     public static Area getOutline(Color target, BufferedImage image, int tolerance) {
         GeneralPath gp = new GeneralPath();
@@ -131,7 +131,7 @@ public class ContourCalculator {
         }
     }
 
-    public static Map<Shape, Integer> assignCountryInfo(ArrayList<Shape> shapes) {
+    public static Map<Shape, Country.Continent> assignCountryInfo(ArrayList<Shape> shapes) {
         shapes.sort(new Comparator<Shape>() {
             @Override
             public int compare(Shape o1, Shape o2) {
@@ -140,10 +140,11 @@ public class ContourCalculator {
                 return 0;
             }
         });
-        Map<Shape, Integer> map = new HashMap<>();
+        Map<Integer, Country.Continent> continentMap = new HashMap<>();
+        continentMap.put(122, Country.Continent.EUROPE);
+        Map<Shape, Country.Continent> map = new HashMap<>();
         for (int i = 0; i < shapes.size(); i++) {
-
-            map.put(shapes.get(i),i);
+            map.put(shapes.get(i),continentMap.get(i));
         }
         return map;
     }

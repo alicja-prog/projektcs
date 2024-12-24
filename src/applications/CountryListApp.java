@@ -9,6 +9,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.stream.Collectors;
 import javax.swing.DefaultListModel;
 
 
@@ -18,9 +19,7 @@ public class CountryListApp {
     private final App app;
     private JPanel countryListPanel;
     private CurrencyConverterApp currencyConverterApp;
-
-
-
+    private DefaultListModel<Country>  countryListModel;
 
     public CountryListApp(App app, CurrencyConverterApp currencyConverterApp) {
         this.currencyConverterApp = currencyConverterApp;
@@ -30,13 +29,23 @@ public class CountryListApp {
 
     // Getter for the panel
     public JPanel getPanel() {
-        return countryListPanel;
+        return this.countryListPanel;
     }
+
+    public void selectContinent(String continent) {
+        if (continent != null) {
+            countryListModel.removeAllElements();
+            countryListModel.addAll(Country.ALL_COUNTRIES.stream().filter(country -> country.getContinent().equals(Country.Continent.EUROPE)).collect(Collectors.toList()));
+            return;
+        }
+
+    }
+
 
     private JPanel createCountryListPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         // Create the country list model and JList
-        DefaultListModel<Country> countryListModel = new DefaultListModel<>();
+        countryListModel = new DefaultListModel<>();
 
         for (Country country : Country.ALL_COUNTRIES) {
             countryListModel.addElement(country);
@@ -113,6 +122,7 @@ public class CountryListApp {
 
             // Filter the country list based on the search bar input
             private void filterList() {
+
                 String filterText = searchField.getText().toLowerCase();
                 if (filterText.equals("search")) {
                     countryListModel.addAll(Country.ALL_COUNTRIES);

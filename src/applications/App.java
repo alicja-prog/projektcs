@@ -11,9 +11,6 @@ public class App {
     private  CardLayout cardLayout = new CardLayout();
     private  JPanel mainPanel = new JPanel(cardLayout);
     private CurrencyConverterApp currencyConverterApp;
-
-
-
     private CountryListApp countryListApp;
     private JFrame mainFrame;
     private WorldMapApp worldMapApp;
@@ -26,7 +23,6 @@ public class App {
         countryListApp = new CountryListApp(this,currencyConverterApp);
 
         worldMapApp = new WorldMapApp(this);
-
         mainFrame =  new JFrame("Combined Application");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(750, 550);
@@ -232,8 +228,13 @@ public class App {
     public LoginManager getLoginManager() {
         return loginManager;
     }
+
     public CountryListApp getCountryListApp() {
         return countryListApp;
+    }
+
+    public void selectEuropeOnCountryListAppPanel() {
+        this.countryListApp.selectContinent("Europe");
     }
 }
 
