@@ -10,16 +10,20 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.stream.Collectors;
+import java.util.List;
 import javax.swing.DefaultListModel;
 
 
 public class CountryListApp {
-
+    // Checkboxes for continents
+    private JCheckBox europeCheckBox, asiaCheckBox, africaCheckBox, northAmericaCheckBox, southAmericaCheckBox, australiaCheckBox;
+    private DefaultListModel<Country> countryListModel;
+    private JList<Country> countryList;
 
     private final App app;
     private JPanel countryListPanel;
     private CurrencyConverterApp currencyConverterApp;
-    private DefaultListModel<Country>  countryListModel;
+
 
     public CountryListApp(App app, CurrencyConverterApp currencyConverterApp) {
         this.currencyConverterApp = currencyConverterApp;
@@ -32,7 +36,7 @@ public class CountryListApp {
         return this.countryListPanel;
     }
 
-    public void selectContinent(String continent) {
+    /*public void selectContinent(String continent) {
         if (continent != null) {
             countryListModel.removeAllElements();
             countryListModel.addAll(Country.ALL_COUNTRIES.stream().filter(country -> country.getContinent().equals(Country.Continent.EUROPE)).collect(Collectors.toList()));
@@ -40,7 +44,7 @@ public class CountryListApp {
         }
 
     }
-
+*/
 
     private JPanel createCountryListPanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -100,6 +104,31 @@ public class CountryListApp {
 
     });
 */
+        // Create checkboxes for continents
+        JPanel checkBoxPanel = new JPanel();
+        checkBoxPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        europeCheckBox = new JCheckBox("Europe");
+        asiaCheckBox = new JCheckBox("Asia");
+        africaCheckBox = new JCheckBox("Africa");
+        northAmericaCheckBox = new JCheckBox("North America");
+        southAmericaCheckBox = new JCheckBox("South America");
+        australiaCheckBox = new JCheckBox("Australia");  // Changed from Oceania to Australia
+
+
+        // Add checkboxes to the checkbox panel
+        checkBoxPanel.add(europeCheckBox);
+        checkBoxPanel.add(asiaCheckBox);
+        checkBoxPanel.add(africaCheckBox);
+        checkBoxPanel.add(northAmericaCheckBox);
+        checkBoxPanel.add(southAmericaCheckBox);
+        checkBoxPanel.add(australiaCheckBox);  // Use australiaCheckBox
+
+        // Create a container panel to hold both search field and checkboxes
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+        topPanel.add(checkBoxPanel, BorderLayout.NORTH); // Add checkboxes to the top of the container
+        topPanel.add(searchField, BorderLayout.CENTER);
 
         searchField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
 
@@ -152,9 +181,10 @@ public class CountryListApp {
         });System.out.println("Updated list size: " + countryListModel.getSize()); // Debugging
 
         // Add components to the panel
-        panel.add(searchField, BorderLayout.NORTH); // Add search bar at the top
-        panel.add(listScrollPane, BorderLayout.CENTER); // Add the list in the center
 
+        panel.add(listScrollPane, BorderLayout.CENTER); // Add the list in the center
+        panel.add(topPanel, BorderLayout.NORTH);
+        
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> app.switchPanel("MainAppPanel"));
         panel.add(backButton, BorderLayout.SOUTH);

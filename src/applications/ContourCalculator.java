@@ -141,7 +141,28 @@ public class ContourCalculator {
             }
         });
         Map<Integer, Country.Continent> continentMap = new HashMap<>();
-        continentMap.put(122, Country.Continent.EUROPE);
+        continentMap.put(120, Country.Continent.EUROPE);
+        continentMap.put(104, Country.Continent.EUROPE);
+        continentMap.put(118, Country.Continent.ASIA);
+        continentMap.put(122, Country.Continent.ASIA);
+        continentMap.put(121, Country.Continent.ASIA);
+        continentMap.put(105, Country.Continent.ASIA);
+        continentMap.put(110, Country.Continent.ASIA);
+        continentMap.put(115, Country.Continent.ASIA);
+        continentMap.put(114, Country.Continent.ASIA);
+        continentMap.put(4, Country.Continent.ASIA);
+        continentMap.put(127, Country.Continent.AFRICA);
+        continentMap.put(116, Country.Continent.AFRICA);
+        continentMap.put(124, Country.Continent.NORTH_AMERICA);
+        continentMap.put(106, Country.Continent.NORTH_AMERICA);
+        continentMap.put(111, Country.Continent.NORTH_AMERICA);
+        continentMap.put(117, Country.Continent.NORTH_AMERICA);
+        continentMap.put(94, Country.Continent.NORTH_AMERICA);
+        continentMap.put(126, Country.Continent.SOUTH_AMERICA);
+        continentMap.put(119, Country.Continent.OCEANIA);
+        continentMap.put(123, Country.Continent.OCEANIA);
+        continentMap.put(107, Country.Continent.OCEANIA);
+        continentMap.put(112, Country.Continent.OCEANIA);
         Map<Shape, Country.Continent> map = new HashMap<>();
         for (int i = 0; i < shapes.size(); i++) {
             map.put(shapes.get(i),continentMap.get(i));

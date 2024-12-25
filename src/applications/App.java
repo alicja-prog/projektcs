@@ -233,9 +233,9 @@ public class App {
         return countryListApp;
     }
 
-    public void selectEuropeOnCountryListAppPanel() {
-        this.countryListApp.selectContinent("Europe");
-    }
+   // public void selectEuropeOnCountryListAppPanel() {
+     //   this.countryListApp.selectContinent("Europe");
+ //   }
 }
 
 
