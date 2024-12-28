@@ -9,20 +9,25 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.stream.Collectors;
+import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.DefaultListModel;
 
 
 public class CountryListApp {
     // Checkboxes for continents
-    private JCheckBox europeCheckBox, asiaCheckBox, africaCheckBox, northAmericaCheckBox, southAmericaCheckBox, australiaCheckBox;
+//    private JCheckBox europeCheckBox, asiaCheckBox, africaCheckBox, northAmericaCheckBox, southAmericaCheckBox, australiaCheckBox;
+//    Map<Country.Continent, JCheckBox> continentJCheckBoxMap;
+    HashMap<Country.Continent, JRadioButton> continentRadioButtonMap = new HashMap<>();
+
     private DefaultListModel<Country> countryListModel;
     private JList<Country> countryList;
 
     private final App app;
     private JPanel countryListPanel;
     private CurrencyConverterApp currencyConverterApp;
+    private JTextField searchField;
 
 
     public CountryListApp(App app, CurrencyConverterApp currencyConverterApp) {
@@ -48,40 +53,34 @@ public class CountryListApp {
 
     private JPanel createCountryListPanel() {
         JPanel panel = new JPanel(new BorderLayout());
+
         // Create the country list model and JList
         countryListModel = new DefaultListModel<>();
-
-        for (Country country : Country.ALL_COUNTRIES) {
-            countryListModel.addElement(country);
-        }
+        Country.ALL_COUNTRIES.forEach(countryListModel::addElement); // Populate the model with all countries
         JList<Country> countryList = new JList<>(countryListModel);
         countryList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane listScrollPane = new JScrollPane(countryList);
 
-        // Add action listener for selection
-        countryList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    Country selectedCountry = countryList.getSelectedValue();
-                    if (selectedCountry != null) {
-                        showCountryInfo(selectedCountry); // Call method to show info
-
-
-                    }    }
+        // Add a listener for list selection
+        countryList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                Country selectedCountry = countryList.getSelectedValue();
+                if (selectedCountry != null) {
+                    showCountryInfo(selectedCountry); // Display country info
+                }
             }
         });
-        // Create the search bar (loupe)
-        JTextField searchField = new JTextField();
-        searchField.setText("Search");
-        searchField.setForeground(Color.GRAY); // Placeholder text color
 
-        searchField.addFocusListener(new java.awt.event.FocusListener() {
+        // Create the search bar
+        searchField = new JTextField("Search");
+        searchField.setForeground(Color.GRAY);
+
+        searchField.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
             public void focusGained(java.awt.event.FocusEvent e) {
                 if (searchField.getText().equals("Search")) {
                     searchField.setText("");
-                    searchField.setForeground(Color.BLACK); // User input text color
+                    searchField.setForeground(Color.BLACK);
                 }
             }
 
@@ -89,107 +88,117 @@ public class CountryListApp {
             public void focusLost(java.awt.event.FocusEvent e) {
                 if (searchField.getText().isEmpty()) {
                     searchField.setText("Search");
-                    searchField.setForeground(Color.GRAY); // Placeholder text color
+                    searchField.setForeground(Color.GRAY);
                 }
             }
         });
-        /*searchField.addKeyListener(new java.awt.event.KeyAdapter(){
-                @Override
-                public void keyTyped (java.awt.event.KeyEvent e){
-                if (searchField.getText().equals("Search")) {
-                    searchField.setText("");
-                    searchField.setForeground(Color.BLACK); // Change to input text color
-                }
-            }
 
-    });
-*/
-        // Create checkboxes for continents
-        JPanel checkBoxPanel = new JPanel();
-        checkBoxPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-
-        europeCheckBox = new JCheckBox("Europe");
-        asiaCheckBox = new JCheckBox("Asia");
-        africaCheckBox = new JCheckBox("Africa");
-        northAmericaCheckBox = new JCheckBox("North America");
-        southAmericaCheckBox = new JCheckBox("South America");
-        australiaCheckBox = new JCheckBox("Australia");  // Changed from Oceania to Australia
-
-
-        // Add checkboxes to the checkbox panel
-        checkBoxPanel.add(europeCheckBox);
-        checkBoxPanel.add(asiaCheckBox);
-        checkBoxPanel.add(africaCheckBox);
-        checkBoxPanel.add(northAmericaCheckBox);
-        checkBoxPanel.add(southAmericaCheckBox);
-        checkBoxPanel.add(australiaCheckBox);  // Use australiaCheckBox
-
-        // Create a container panel to hold both search field and checkboxes
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BorderLayout());
-        topPanel.add(checkBoxPanel, BorderLayout.NORTH); // Add checkboxes to the top of the container
-        topPanel.add(searchField, BorderLayout.CENTER);
-
+        // Add a DocumentListener to the search field
         searchField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-
             @Override
             public void insertUpdate(javax.swing.event.DocumentEvent e) {
-                System.out.println("Insert event detected."); // Debugging
-                filterList();
+                updateCountryListModel();
             }
 
             @Override
             public void removeUpdate(javax.swing.event.DocumentEvent e) {
-                System.out.println("Change event detected."); // Debugging
-                filterList();
+                updateCountryListModel();
             }
 
             @Override
             public void changedUpdate(javax.swing.event.DocumentEvent e) {
-                filterList();
+                updateCountryListModel();
             }
+        });
 
-            // Filter the country list based on the search bar input
-            private void filterList() {
+        // Create a ButtonGroup for the radio buttons
+        ButtonGroup buttonGroup = new ButtonGroup();
 
-                String filterText = searchField.getText().toLowerCase();
-                if (filterText.equals("search")) {
-                    countryListModel.addAll(Country.ALL_COUNTRIES);
-                    return;
-                }
-                System.out.println("Filtering for: " + filterText); // Debug log
-                countryListModel.clear();
+        // Add radio buttons to the map and group
+        continentRadioButtonMap.put(Country.Continent.WHOLE_WORLD, new JRadioButton("All Countries"));
+        continentRadioButtonMap.put(Country.Continent.EUROPE, new JRadioButton("Europe"));
+        continentRadioButtonMap.put(Country.Continent.AFRICA, new JRadioButton("Africa"));
+        continentRadioButtonMap.put(Country.Continent.NORTH_AMERICA, new JRadioButton("North America"));
+        continentRadioButtonMap.put(Country.Continent.SOUTH_AMERICA, new JRadioButton("South America"));
+        continentRadioButtonMap.put(Country.Continent.OCEANIA, new JRadioButton("Australia"));
 
-                System.out.println("Filtering for: " + filterText); // Debugging
+        JPanel radioPanel = new JPanel();
+        continentRadioButtonMap.forEach((continent, radioButton) -> {
+            buttonGroup.add(radioButton); // Ensure only one button is selected at a time
+            radioPanel.add(radioButton); // Add the button to the UI
+            radioButton.addActionListener(e -> updateCountryListModel());
+        });
 
-                for (Country country : Country.ALL_COUNTRIES) {
-                    String lowerCaseCountry = country.getName().toLowerCase();
+        // Create a top panel to hold the search field and radio buttons
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(radioPanel, BorderLayout.NORTH); // Add radio buttons at the top
+        topPanel.add(searchField, BorderLayout.CENTER); // Add search field below
 
-                    // Match the beginning of the name, whole name, or first letter
-                    if (lowerCaseCountry.startsWith(filterText)) {
-                        countryListModel.addElement(country);
-                        System.out.println("Matched: " + country); // Debugging
-                    }
-                }
+        // Add components to the main panel
+        panel.add(listScrollPane, BorderLayout.CENTER); // Add the country list in the center
+        panel.add(topPanel, BorderLayout.NORTH); // Add the top panel at the top
 
-                // If no match is found, add a message to the list
-                if (countryListModel.isEmpty()) {
-//                    countryListModel.addElement("No matches found"); TODO
-                    System.out.println("No matches found."); // Debugging
-                }
-            }
-        });System.out.println("Updated list size: " + countryListModel.getSize()); // Debugging
-
-        // Add components to the panel
-
-        panel.add(listScrollPane, BorderLayout.CENTER); // Add the list in the center
-        panel.add(topPanel, BorderLayout.NORTH);
-        
+        // Add a back button at the bottom
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> app.switchPanel("MainAppPanel"));
         panel.add(backButton, BorderLayout.SOUTH);
+
         return panel;
     }
+
+
+    public List<Country> filterCountriesBasedOnContinent() {
+        // Iterate through the radio buttons to find the selected one
+        for (Map.Entry<Country.Continent, JRadioButton> entry : continentRadioButtonMap.entrySet()) {
+            JRadioButton radioButton = entry.getValue();
+            if (radioButton.isSelected()) {
+                Country.Continent selectedContinent = entry.getKey();
+                if (selectedContinent == Country.Continent.WHOLE_WORLD) {
+                    // If "All Countries" is selected, return all countries
+                    return new ArrayList<>(Country.ALL_COUNTRIES);
+                } else {
+                    // Filter countries by the selected continent
+                    return Country.ALL_COUNTRIES.stream()
+                            .filter(country -> country.getContinent().equals(selectedContinent))
+                            .collect(Collectors.toList());
+                }
+            }
+        }
+        // Default case: return an empty list if no button is selected
+        return new ArrayList<>();
+    }
+    private void updateCountryListModel() {
+        String filterText = searchField.getText().toLowerCase();
+        if (filterText.equals("search")) {
+            filterText = ""; // Ignore placeholder text
+        }
+
+//        // Get the selected continent from the radio buttons
+//        Country.Continent selectedContinent = null;
+//        for (Map.Entry<Country.Continent, JRadioButton> entry : continentRadioButtonMap.entrySet()) {
+//            if (entry.getValue().isSelected()) {
+//                selectedContinent = entry.getKey();
+//                break;
+//            }
+//        }
+        List<Country> countries = filterCountriesBasedOnContinent();
+
+        // Clear the current list model
+        countryListModel.clear();
+
+        // Apply the filters
+            for (Country country : countries) {
+            boolean matchesSearch = country.getName().toLowerCase().contains(filterText);
+//            boolean matchesContinent = (selectedContinent == null || country.getContinent().equals(selectedContinent));
+
+//                if (matchesSearch && matchesContinent) {
+            if (matchesSearch ) {
+                countryListModel.addElement(country);
+            }
+        }
+    }
+
+
 
     private void showCountryInfo(Country countryName) {
         Country country = Country.ALL_COUNTRIES.stream().filter((c) -> c.equals(countryName)).findFirst().get();

@@ -72,7 +72,7 @@ public class Country {
         NORTH_AMERICA,
         SOUTH_AMERICA,
         OCEANIA,
-        ANTARCTICA
+        WHOLE_WORLD
     }
     public static final List<Country> ALL_COUNTRIES = new ArrayList<>();
 
