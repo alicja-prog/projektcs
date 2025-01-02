@@ -168,9 +168,13 @@ public class CountryListApp {
         return new ArrayList<>();
     }
     private void updateCountryListModel() {
-        String filterText = searchField.getText().toLowerCase();
+        String filterText = searchField.startsWith.getText().toLowerCase();
         if (filterText.equals("search")) {
             filterText = ""; // Ignore placeholder text
+        }
+        if (searchField.startsWith(filterText)) {
+            countryListModel.addElement(country);
+            System.out.println("Matched: " + country); // Debugging
         }
 
 //        // Get the selected continent from the radio buttons
