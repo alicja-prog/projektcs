@@ -109,4 +109,8 @@ public class LoginManager {
     public User getLoggedInUser() {
         return loggedInUser;
     }
+
+    public void logout() {
+        loggedInUser = null;
+    }
 }

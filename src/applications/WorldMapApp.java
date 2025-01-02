@@ -100,7 +100,7 @@ public class WorldMapApp {
             Point p = e.getPoint();
             for (Map.Entry<Shape, Country.Continent> entry : countryInfoMap.entrySet()) {
                 if (entry.getKey().contains(p)) {
-                    //app.selectEuropeOnCountryListAppPanel();
+                    app.getCountryListApp().setContinent(entry.getValue());
                     app.switchPanel("CountryListPanel");
                     return;
                 }

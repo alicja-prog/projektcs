@@ -16,14 +16,8 @@ import javax.swing.DefaultListModel;
 
 
 public class CountryListApp {
-    // Checkboxes for continents
-//    private JCheckBox europeCheckBox, asiaCheckBox, africaCheckBox, northAmericaCheckBox, southAmericaCheckBox, australiaCheckBox;
-//    Map<Country.Continent, JCheckBox> continentJCheckBoxMap;
     HashMap<Country.Continent, JRadioButton> continentRadioButtonMap = new HashMap<>();
-
     private DefaultListModel<Country> countryListModel;
-    private JList<Country> countryList;
-
     private final App app;
     private JPanel countryListPanel;
     private CurrencyConverterApp currencyConverterApp;
@@ -41,15 +35,6 @@ public class CountryListApp {
         return this.countryListPanel;
     }
 
-    /*public void selectContinent(String continent) {
-        if (continent != null) {
-            countryListModel.removeAllElements();
-            countryListModel.addAll(Country.ALL_COUNTRIES.stream().filter(country -> country.getContinent().equals(Country.Continent.EUROPE)).collect(Collectors.toList()));
-            return;
-        }
-
-    }
-*/
 
     private JPanel createCountryListPanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -121,6 +106,7 @@ public class CountryListApp {
         continentRadioButtonMap.put(Country.Continent.NORTH_AMERICA, new JRadioButton("North America"));
         continentRadioButtonMap.put(Country.Continent.SOUTH_AMERICA, new JRadioButton("South America"));
         continentRadioButtonMap.put(Country.Continent.OCEANIA, new JRadioButton("Australia"));
+        continentRadioButtonMap.put(Country.Continent.ASIA, new JRadioButton("Asia"));
 
         JPanel radioPanel = new JPanel();
         continentRadioButtonMap.forEach((continent, radioButton) -> {
@@ -129,6 +115,7 @@ public class CountryListApp {
             radioButton.addActionListener(e -> updateCountryListModel());
         });
 
+        continentRadioButtonMap.get(Country.Continent.WHOLE_WORLD).setSelected(true);
         // Create a top panel to hold the search field and radio buttons
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(radioPanel, BorderLayout.NORTH); // Add radio buttons at the top
@@ -168,37 +155,19 @@ public class CountryListApp {
         return new ArrayList<>();
     }
     private void updateCountryListModel() {
-        String filterText = searchField.getText().toLowerCase();
-        if (filterText.equals("search")) {
-            filterText = ""; // Ignore placeholder text
-        }
-
-//        // Get the selected continent from the radio buttons
-//        Country.Continent selectedContinent = null;
-//        for (Map.Entry<Country.Continent, JRadioButton> entry : continentRadioButtonMap.entrySet()) {
-//            if (entry.getValue().isSelected()) {
-//                selectedContinent = entry.getKey();
-//                break;
-//            }
-//        }
-        List<Country> countries = filterCountriesBasedOnContinent();
-
-        // Clear the current list model
         countryListModel.clear();
-
-        // Apply the filters
-            for (Country country : countries) {
-            boolean matchesSearch = country.getName().toLowerCase().contains(filterText);
-//            boolean matchesContinent = (selectedContinent == null || country.getContinent().equals(selectedContinent));
-
-//                if (matchesSearch && matchesContinent) {
-            if (matchesSearch ) {
+        List<Country> continentCountries = filterCountriesBasedOnContinent();
+        String filterText = searchField.getText().toLowerCase();
+        if (filterText.equals("search") || filterText.equals("")) {
+            countryListModel.addAll(continentCountries);
+            return;
+        }
+        for (Country country : continentCountries) {
+            if(country.getName().toLowerCase().startsWith(filterText.toLowerCase())) {
                 countryListModel.addElement(country);
             }
         }
     }
-
-
 
     private void showCountryInfo(Country countryName) {
         Country country = Country.ALL_COUNTRIES.stream().filter((c) -> c.equals(countryName)).findFirst().get();
@@ -299,7 +268,10 @@ public class CountryListApp {
     }
 
 
-
-
+    public void setContinent(Country.Continent continent) {
+        searchField.setText("");
+        continentRadioButtonMap.get(continent).setSelected(true);
+        updateCountryListModel();
+    }
 }
 

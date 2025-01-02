@@ -3,9 +3,13 @@ package com.example.internal.src.applications;
 import com.example.internal.src.model.Country;
 import com.example.internal.src.model.Currency;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -46,7 +50,27 @@ public class CurrencyConverterApp {
     }
 
     private JPanel createCurrencyConverterPanel() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10)); // 10px gaps between components
+        // Load the background image
+        BufferedImage backgroundImage = null;
+        try {
+            backgroundImage = ImageIO.read(new File("src/static_files/background.jpg")); // Update with your image path
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Unable to load background image", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // Create the main panel with a background image
+        BufferedImage finalBackgroundImage = backgroundImage;
+        JPanel panel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (finalBackgroundImage != null) {
+                    // Draw the image to fill the panel
+                    g.drawImage(finalBackgroundImage, 0, 0, getWidth(), getHeight(), this);
+                }
+            }
+        };
 
         // NORTH region: Title label
         JLabel titleLabel = new JLabel("Currency Converter", SwingConstants.CENTER);
@@ -54,6 +78,7 @@ public class CurrencyConverterApp {
         panel.add(titleLabel, BorderLayout.NORTH);
 
         JPanel centerPanel = new JPanel(new GridBagLayout());
+        centerPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10); // Margins around components
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -135,6 +160,7 @@ public class CurrencyConverterApp {
         panel.add(centerPanel, BorderLayout.CENTER);
         // WEST region: Optional country buttons (if needed)
         JPanel westPanel = new JPanel(new GridLayout(0, 1, 5, 5)); // Dynamic rows, single column
+        westPanel.setOpaque(false);
         if (this.app.getLoginManager().getLoggedInUser() != null) {
             Collection<Country> favCountries = this.app.getLoginManager().getLoggedInUser().getFavouriteCountries();
             if (favCountries != null) {
