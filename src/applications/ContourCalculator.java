@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class ContourCalculator {
 
-    public static Map<Shape, Country.Continent> processImage(BufferedImage image, double width, double height, Color targetColor, int tolerance) {
+    public static Map<Shape, Integer> processImage(BufferedImage image, double width, double height, Color targetColor, int tolerance) {
         // Step 1: Get the outline of the target color in the image
         Area outline = ContourCalculator.getOutline(targetColor, image, tolerance);
 
@@ -29,10 +29,7 @@ public class ContourCalculator {
         ContourCalculator.calibrateShapes(shapeList);
 
         // Step 5: Assign country information to each shape
-        Map<Shape, Country.Continent> countryInfoMap = ContourCalculator.assignCountryInfo(shapeList);
-
-        // Return both the outline and the country information
-        return countryInfoMap;
+        return ContourCalculator.assignCountryInfo(shapeList);
     }
 
     public static Area getOutline(Color target, BufferedImage image, int tolerance) {
@@ -131,7 +128,7 @@ public class ContourCalculator {
         }
     }
 
-    public static Map<Shape, Country.Continent> assignCountryInfo(ArrayList<Shape> shapes) {
+    public static Map<Shape, Integer> assignCountryInfo(ArrayList<Shape> shapes) {
         shapes.sort(new Comparator<Shape>() {
             @Override
             public int compare(Shape o1, Shape o2) {
@@ -163,9 +160,9 @@ public class ContourCalculator {
         continentMap.put(123, Country.Continent.OCEANIA);
         continentMap.put(107, Country.Continent.OCEANIA);
         continentMap.put(112, Country.Continent.OCEANIA);
-        Map<Shape, Country.Continent> map = new HashMap<>();
+        Map<Shape, Integer> map = new HashMap<>();
         for (int i = 0; i < shapes.size(); i++) {
-            map.put(shapes.get(i),continentMap.get(i));
+            map.put(shapes.get(i),i);
         }
         return map;
     }
