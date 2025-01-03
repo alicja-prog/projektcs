@@ -300,7 +300,7 @@ public class App {
         // Load the background image
         BufferedImage backgroundImage = null;
         try {
-            backgroundImage = ImageIO.read(new File("src/static_files/background.jpg")); // Update with your image path
+            backgroundImage = ImageIO.read(new File("src/static_files/background2.jpg")); // Update with your image path
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Unable to load background image", "Error", JOptionPane.ERROR_MESSAGE);
