@@ -89,6 +89,13 @@ public class Currency {
         ALL_CURRENCIES.add(new Currency("GBP", "British Pound"));
         ALL_CURRENCIES.add(new Currency("USD", "US Dollar"));
         ALL_CURRENCIES.add(new Currency("ZAR", "South African Rand"));
+        ALL_CURRENCIES.add(new Currency("MYR", "Malaysian Ringgit"));
+        ALL_CURRENCIES.add(new Currency("AUD", "Australian Dollar"));
+        ALL_CURRENCIES.add(new Currency("KRW", "South Korean won"));
+        ALL_CURRENCIES.add(new Currency("BRL", "Brazilian real"));
+        ALL_CURRENCIES.add(new Currency("UAH", "Ukrainian hryvnia"));
+        ALL_CURRENCIES.add(new Currency("ISK", "Icelandic Króna"));
+
     }
 
 }

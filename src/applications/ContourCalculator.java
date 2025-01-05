@@ -15,20 +15,15 @@ import java.util.Map;
 
 public class ContourCalculator {
 
-    public static Map<Shape, Integer> processImage(BufferedImage image, double width, double height, Color targetColor, int tolerance) {
-        // Step 1: Get the outline of the target color in the image
+    public static Map<Shape, Country.Continent> processImage(BufferedImage image, double width, double height, Color targetColor, int tolerance) {
         Area outline = ContourCalculator.getOutline(targetColor, image, tolerance);
 
-        // Step 2: Separate the outline into individual regions
         ArrayList<Shape> shapeList = ContourCalculator.separateShapeIntoRegions(outline);
 
-        // Step 3: Filter out large ocean regions
         ContourCalculator.filterOceans(shapeList, width, height);
 
-        // Step 4: Calibrate shapes
         ContourCalculator.calibrateShapes(shapeList);
 
-        // Step 5: Assign country information to each shape
         return ContourCalculator.assignCountryInfo(shapeList);
     }
 
@@ -112,8 +107,7 @@ public class ContourCalculator {
         shapeList.removeIf(shape -> {
             Rectangle bounds = shape.getBounds();
             double area = bounds.getWidth() * bounds.getHeight();
-            // Exclude shapes that are disproportionately large (likely oceans)
-            return area > (width * height * 0.1); // Adjust the threshold as needed
+            return area > (width * height * 0.1);
         });
     }
 
@@ -128,7 +122,7 @@ public class ContourCalculator {
         }
     }
 
-    public static Map<Shape, Integer> assignCountryInfo(ArrayList<Shape> shapes) {
+    public static Map<Shape, Country.Continent> assignCountryInfo(ArrayList<Shape> shapes) {
         shapes.sort(new Comparator<Shape>() {
             @Override
             public int compare(Shape o1, Shape o2) {
@@ -154,15 +148,18 @@ public class ContourCalculator {
         continentMap.put(106, Country.Continent.NORTH_AMERICA);
         continentMap.put(111, Country.Continent.NORTH_AMERICA);
         continentMap.put(117, Country.Continent.NORTH_AMERICA);
+        continentMap.put(1, Country.Continent.NORTH_AMERICA);
         continentMap.put(94, Country.Continent.NORTH_AMERICA);
+        continentMap.put(85, Country.Continent.NORTH_AMERICA);
         continentMap.put(126, Country.Continent.SOUTH_AMERICA);
+        continentMap.put(125, Country.Continent.SOUTH_AMERICA);
         continentMap.put(119, Country.Continent.OCEANIA);
         continentMap.put(123, Country.Continent.OCEANIA);
         continentMap.put(107, Country.Continent.OCEANIA);
         continentMap.put(112, Country.Continent.OCEANIA);
-        Map<Shape, Integer> map = new HashMap<>();
+        Map<Shape, Country.Continent> map = new HashMap<>();
         for (int i = 0; i < shapes.size(); i++) {
-            map.put(shapes.get(i),i);
+            map.put(shapes.get(i),continentMap.get(i));
         }
         return map;
     }

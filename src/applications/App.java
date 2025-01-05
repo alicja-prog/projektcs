@@ -33,7 +33,7 @@ public class App {
         worldMapApp = new WorldMapApp(this);
         mainFrame =  new JFrame("Combined Application");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setSize(600, 550);
+        mainFrame.setSize(650, 550);
         mainFrame.setResizable(false); // Prevent resizing
 
         mainFrame.setLocationRelativeTo(null);

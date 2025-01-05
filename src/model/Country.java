@@ -1,6 +1,7 @@
 package com.example.internal.src.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -103,60 +104,79 @@ public class Country {
             Currency zar = findCurrencyByCode("ZAR");
             Currency gbp = findCurrencyByCode("GBP");
             Currency usd = findCurrencyByCode("USD");
+            Currency myr = findCurrencyByCode("MYR");
+            Currency aud = findCurrencyByCode("AUD");
+            Currency krw = findCurrencyByCode("KRW");
+            Currency brl = findCurrencyByCode("BRL");
+            Currency uah = findCurrencyByCode("UAH");
+            Currency isk = findCurrencyByCode("ISK");
 
             // Add countries to the list
-            ALL_COUNTRIES.add(new Country("Belgium", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Germany", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("France", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Italy", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Spain", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Portugal", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Netherlands", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Austria", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Finland", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Ireland", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Luxembourg", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Malta", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Slovakia", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Slovenia", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Estonia", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Latvia", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Lithuania", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Andorra", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Monaco", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("San Marino", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Vatican City", euro, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Bulgaria", bgn, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Canada", cad, Continent.NORTH_AMERICA));
-            ALL_COUNTRIES.add(new Country("Chile", clp, Continent.SOUTH_AMERICA));
-            ALL_COUNTRIES.add(new Country("China", cny, Continent.ASIA));
-            ALL_COUNTRIES.add(new Country("Czech Republic", czk, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Denmark", dkk, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Hong Kong", hkd, Continent.ASIA));
-            ALL_COUNTRIES.add(new Country("Hungary", huf, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("India", inr, Continent.ASIA));
-            ALL_COUNTRIES.add(new Country("Indonesia", idr, Continent.ASIA));
-            ALL_COUNTRIES.add(new Country("Israel", ils, Continent.ASIA));
-            ALL_COUNTRIES.add(new Country("Japan", jpy, Continent.ASIA));
-            ALL_COUNTRIES.add(new Country("Mexico", mxn, Continent.NORTH_AMERICA));
-            ALL_COUNTRIES.add(new Country("New Zealand", nzd, Continent.OCEANIA));
-            ALL_COUNTRIES.add(new Country("Norway", nok, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Philippines", php, Continent.ASIA));
-            ALL_COUNTRIES.add(new Country("Poland", pln, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Romania", ron, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Singapore", sgd, Continent.ASIA));
-            ALL_COUNTRIES.add(new Country("Sweden", sek, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Switzerland", chf, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("Thailand", thb, Continent.ASIA));
-            ALL_COUNTRIES.add(new Country("South Africa", zar, Continent.AFRICA));
-            ALL_COUNTRIES.add(new Country("United Kingdom", gbp, Continent.EUROPE));
-            ALL_COUNTRIES.add(new Country("United States", usd, Continent.NORTH_AMERICA));
-            ALL_COUNTRIES.add(new Country("Puerto Rico", usd, Continent.NORTH_AMERICA));
-            ALL_COUNTRIES.add(new Country("Guam", usd, Continent.OCEANIA));
-            ALL_COUNTRIES.add(new Country("American Samoa", usd, Continent.OCEANIA));
-            ALL_COUNTRIES.add(new Country("US Virgin Islands", usd, Continent.NORTH_AMERICA));
-            ALL_COUNTRIES.add(new Country("Northern Mariana Islands", usd, Continent.OCEANIA));
-        }
+        ALL_COUNTRIES.add(new Country("American Samoa", usd, Continent.OCEANIA));
+        ALL_COUNTRIES.add(new Country("Andorra", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Australia", aud, Continent.OCEANIA));
+        ALL_COUNTRIES.add(new Country("Austria", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Bulgaria", bgn, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Canada", cad, Continent.NORTH_AMERICA));
+        ALL_COUNTRIES.add(new Country("Chile", clp, Continent.SOUTH_AMERICA));
+        ALL_COUNTRIES.add(new Country("China", cny, Continent.ASIA));
+        ALL_COUNTRIES.add(new Country("Czech Republic", czk, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Denmark", dkk, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Estonia", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Finland", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("France", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Germany", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Guam", usd, Continent.OCEANIA));
+        ALL_COUNTRIES.add(new Country("Hong Kong", hkd, Continent.ASIA));
+        ALL_COUNTRIES.add(new Country("Hungary", huf, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("India", inr, Continent.ASIA));
+        ALL_COUNTRIES.add(new Country("Indonesia", idr, Continent.ASIA));
+        ALL_COUNTRIES.add(new Country("Ireland", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Israel", ils, Continent.ASIA));
+        ALL_COUNTRIES.add(new Country("Italy", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Japan", jpy, Continent.ASIA));
+        ALL_COUNTRIES.add(new Country("Latvia", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Lithuania", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Luxembourg", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Malta", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Mexico", mxn, Continent.NORTH_AMERICA));
+        ALL_COUNTRIES.add(new Country("Monaco", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Netherlands", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("New Zealand", nzd, Continent.OCEANIA));
+        ALL_COUNTRIES.add(new Country("Norway", nok, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Poland", pln, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Portugal", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Puerto Rico", usd, Continent.NORTH_AMERICA));
+        ALL_COUNTRIES.add(new Country("Romania", ron, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("San Marino", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Singapore", sgd, Continent.ASIA));
+        ALL_COUNTRIES.add(new Country("Slovakia", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Slovenia", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("South Africa", zar, Continent.AFRICA));
+        ALL_COUNTRIES.add(new Country("Spain", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Sweden", sek, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Switzerland", chf, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Thailand", thb, Continent.ASIA));
+        ALL_COUNTRIES.add(new Country("United Kingdom", gbp, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("United States", usd, Continent.NORTH_AMERICA));
+        ALL_COUNTRIES.add(new Country("US Virgin Islands", usd, Continent.NORTH_AMERICA));
+        ALL_COUNTRIES.add(new Country("Vatican City", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Northern Mariana Islands", usd, Continent.OCEANIA));
+        ALL_COUNTRIES.add(new Country("Austria", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Malaysia", myr, Continent.ASIA));
+        ALL_COUNTRIES.add(new Country("South Korea", krw, Continent.ASIA));
+        ALL_COUNTRIES.add(new Country("Brazil", brl, Continent.SOUTH_AMERICA));
+        ALL_COUNTRIES.add(new Country("Ukraine", uah, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Iceland", isk, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Philippines", php, Continent.ASIA));
+        ALL_COUNTRIES.sort(new Comparator<Country>() {
+            @Override
+            public int compare(Country o1, Country o2) {
+                return o1.name.compareTo(o2.name);
+            }
+        });
+
+    }
 
 
     }

@@ -23,7 +23,7 @@ public class WorldMapApp {
     private JLabel output = new JLabel();
     private JLabel infoLabel = new JLabel("Hover over a country");
     private BufferedImage mapImage;
-    private Map<Shape, Integer> countryInfoMap;
+    private Map<Shape, Country.Continent> countryInfoMap;
 
 
 
@@ -42,7 +42,7 @@ public class WorldMapApp {
 
         }//https://tse2.mm.bing.net/th?id=OIP.GCR7D-XhkHLwqxaOJHtV6gHaFv&pid=Api
         mapImage = ImageIO.read(new File(IMAGE_PATH));
-        mapImage = resizeImage(mapImage, WIDTH, HEIGHT); // Resize image to fit within SIZE
+        mapImage = resizeImage(mapImage, WIDTH, HEIGHT);
         this.countryInfoMap = processImage(mapImage, WIDTH, HEIGHT, Color.WHITE, TOLERANCE);
         worldMapPanel = new JPanel(new BorderLayout(4, 4));
         worldMapPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
@@ -80,7 +80,7 @@ public class WorldMapApp {
         @Override
         public void mouseMoved(MouseEvent e) {
             Point p = e.getPoint();
-            for (Map.Entry<Shape, Integer> entry : countryInfoMap.entrySet()) {
+            for (Map.Entry<Shape, Country.Continent> entry : countryInfoMap.entrySet()) {
                 if (entry.getKey().contains(p)) {
                     infoLabel.setText(String.valueOf(entry.getValue()));
                     refresh();
@@ -98,9 +98,9 @@ public class WorldMapApp {
         @Override
         public void mousePressed(MouseEvent e) {
             Point p = e.getPoint();
-            for (Map.Entry<Shape, Integer> entry : countryInfoMap.entrySet()) {
+            for (Map.Entry<Shape, Country.Continent> entry : countryInfoMap.entrySet()) {
                 if (entry.getKey().contains(p)) {
-//                    app.getCountryListApp().setContinent(entry.getValue());
+                    app.getCountryListApp().setContinent(entry.getValue());
                     app.switchPanel("CountryListPanel");
                     return;
                 }

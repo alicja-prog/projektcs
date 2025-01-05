@@ -1,6 +1,8 @@
 dolfmd,dolfmd,
 zp,zp,
-dod,dod,7|5|4|1|2
+dod,dod,4|7|5|1
 mrsd,mrsd,
-pz,pz,36|7|42|37|3
+nxsd,nxsd,
+pz,pz,3|37|42|7|36
+nxsd2,nxsd2,
 Ljru3!,srovnd07,
