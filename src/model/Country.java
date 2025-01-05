@@ -162,13 +162,24 @@ public class Country {
         ALL_COUNTRIES.add(new Country("US Virgin Islands", usd, Continent.NORTH_AMERICA));
         ALL_COUNTRIES.add(new Country("Vatican City", euro, Continent.EUROPE));
         ALL_COUNTRIES.add(new Country("Northern Mariana Islands", usd, Continent.OCEANIA));
-        ALL_COUNTRIES.add(new Country("Austria", euro, Continent.EUROPE));
         ALL_COUNTRIES.add(new Country("Malaysia", myr, Continent.ASIA));
         ALL_COUNTRIES.add(new Country("South Korea", krw, Continent.ASIA));
         ALL_COUNTRIES.add(new Country("Brazil", brl, Continent.SOUTH_AMERICA));
         ALL_COUNTRIES.add(new Country("Ukraine", uah, Continent.EUROPE));
         ALL_COUNTRIES.add(new Country("Iceland", isk, Continent.EUROPE));
         ALL_COUNTRIES.add(new Country("Philippines", php, Continent.ASIA));
+        ALL_COUNTRIES.add(new Country("Belgium", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Cyprus", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Greece", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Luxembourg", euro, Continent.EUROPE));
+        ALL_COUNTRIES.add(new Country("Ecuador", usd, Continent.SOUTH_AMERICA));
+        ALL_COUNTRIES.add(new Country("El Salvador", usd, Continent.NORTH_AMERICA));
+        ALL_COUNTRIES.add(new Country("East Timor", usd, Continent.ASIA));
+        ALL_COUNTRIES.add(new Country("Panama", usd, Continent.NORTH_AMERICA));
+        ALL_COUNTRIES.add(new Country("Suriname", usd, Continent.SOUTH_AMERICA));
+        ALL_COUNTRIES.add(new Country("Zimbabwe", usd, Continent.AFRICA));
+
+
         ALL_COUNTRIES.sort(new Comparator<Country>() {
             @Override
             public int compare(Country o1, Country o2) {
